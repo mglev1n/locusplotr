@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Michael Levin
 Maintainer: Michael Levin <mglev1n@gmail.com>
 Description: This package allows the user to obtain linkage disequlibrium data for any contiguous region within the genome using the LocusZoom API <https://portaldev.sph.umich.edu/>. Integrating this LD information with results from a genome-wide association study (GWAS) the user can create regional association plots
-License: What license is it under?
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
