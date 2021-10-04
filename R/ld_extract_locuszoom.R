@@ -18,7 +18,7 @@
 # Function to extract LD
 #' ld_extract_locuszoom
 #'
-#' This function allows the user to extract linkage disequilibrium statistics between a variant of interest and surrounding variants within a contiguous genomic region. This function uses the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/> to obtain LD information, and allows the user to specify genome-build and ancestry of interest.
+#' This function allows the user to extract linkage disequilibrium statistics between a variant of interest and surrounding variants within a contiguous genomic region. This function uses the University of Michigan LocusZoom API (<https://portaldev.sph.umich.edu/>) to obtain LD information, and allows the user to specify genome-build and ancestry of interest.
 #'
 #' @param chrom Integer - chromosome of reference variant
 #' @param pos Integer - position of reference variant

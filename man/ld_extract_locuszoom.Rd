@@ -39,5 +39,5 @@ ld_extract_locuszoom(
 A tibble containing each variant within the supplied range surrounding the variant of interest, with the requested linkage disequilibrium information with respect to the variant of interest
 }
 \description{
-This function allows the user to extract linkage disequilibrium statistics between a variant of interest and surrounding variants within a contiguous genomic region. This function uses the University of Michigan LocusZoom API \url{https://portaldev.sph.umich.edu/} to obtain LD information, and allows the user to specify genome-build and ancestry of interest.
+This function allows the user to extract linkage disequilibrium statistics between a variant of interest and surrounding variants within a contiguous genomic region. This function uses the University of Michigan LocusZoom API (\url{https://portaldev.sph.umich.edu/}) to obtain LD information, and allows the user to specify genome-build and ancestry of interest.
 }

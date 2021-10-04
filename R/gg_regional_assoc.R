@@ -2,7 +2,7 @@
 #' gg_regional_assoc
 #'
 #' Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
-#' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the LocusZoom API <https://portaldev.sph.umich.edu/>) for that locus to create a regional association plot.
+#' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API [<https://portaldev.sph.umich.edu/>]) for that locus to create a regional association plot.
 #'
 #' @param df Dataframe containing columns with rsid, chromosome, position, reference/effect allele, alternate/non-effect allele, and p-value for all variants within the range of interest
 #' @param lead_snps A character vector containing the lead variant of interest

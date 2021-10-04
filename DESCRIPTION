@@ -1,14 +1,23 @@
 Package: ggregionalassoc
-Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Michael Levin
-Maintainer: Michael Levin <mglev1n@gmail.com>
-Description: This package allows the user to obtain linkage disequlibrium data for any contiguous region within the genome using the LocusZoom API <https://portaldev.sph.umich.edu/>. Integrating this LD information with results from a genome-wide association study (GWAS) the user can create regional association plots
+Title: Create Regional Association Plots
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Michael",
+           family = "Levin",
+           role = c("aut", "cre"),
+           email = "michael.levin@gmail.com",
+           comment = c(ORCID = "0000-0002-9937-9932"))
+Description: Description: This package allows the user to obtain linkage disequlibrium data for any contiguous region within the genome using the LocusZoom API <https://portaldev.sph.umich.edu/>. Integrating this LD information with results from a genome-wide association study (GWAS) the user can create regional association plots.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-URL: https://github.com/mglev1n/ggregionalassoc
-BugReports: https://github.com/mglev1n/ggregionalassoc/issues
+Imports: 
+    cli,
+    dplyr,
+    ggplot2,
+    glue,
+    httr,
+    purrr,
+    tidyr
