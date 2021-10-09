@@ -2,7 +2,7 @@
 #' gg_regional_assoc
 #'
 #' Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
-#' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API [<https://portaldev.sph.umich.edu/>]) for that locus to create a regional association plot.
+#' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/>) for that locus to create a regional association plot.
 #'
 #' @param df Dataframe containing columns with rsid, chromosome, position, reference/effect allele, alternate/non-effect allele, and p-value for all variants within the range of interest
 #' @param lead_snps A character vector containing the lead variant of interest
@@ -24,6 +24,7 @@
 #' @export
 #'
 #' @examples
+
 gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   df <- df %>%
     select(rsid = {{ rsid }}, chromosome = {{ chromosome }}, position = {{ position }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
@@ -54,7 +55,7 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
 
   ld_extracted <- possibly_ld_extract_locuszoom(chrom = indep_snps$lead_chromosome, pos = indep_snps$lead_position, ref = indep_snps$lead_ref, alt = indep_snps$lead_alt, start = min(locus_snps$position), stop = max(locus_snps$position), build = genome_build, population = population)
 
-  if (!is.null(ld_extracted)) {
+  if (dim(ld_extracted)[1] != 0) {
     locus_snps_ld <- ld_extracted %>%
       select(chromosome = chromosome2, position = position2, variant2, correlation) %>%
       mutate(chromosome = as.numeric(chromosome), position = as.numeric(position)) %>%

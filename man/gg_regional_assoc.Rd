@@ -58,5 +58,5 @@ A ggplot object
 }
 \description{
 Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
-This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API \link[=<https://portaldev.sph.umich.edu/>]{\url{https://portaldev.sph.umich.edu/}}) for that locus to create a regional association plot.
+This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API \url{https://portaldev.sph.umich.edu/}) for that locus to create a regional association plot.
 }
