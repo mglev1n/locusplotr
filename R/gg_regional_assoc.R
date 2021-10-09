@@ -25,7 +25,7 @@
 #'
 #' @examples
 
-gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_title = NULL, plot_subtitle = NULL, path = NULL) {
+gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   df <- df %>%
     select(rsid = {{ rsid }}, chromosome = {{ chromosome }}, position = {{ position }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
     mutate_if(is.factor, as.character) %>%
@@ -51,11 +51,11 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
 
   # Extract LD and format colors
   # consider adding error handling if we can't extract LD - eg. just plot without colors
-  possibly_ld_extract_locuszoom <- possibly(ld_extract_locuszoom_api, otherwise = NULL)
+  possibly_ld_extract_locuszoom <- possibly(ld_extract_locuszoom, otherwise = NULL)
 
   ld_extracted <- possibly_ld_extract_locuszoom(chrom = indep_snps$lead_chromosome, pos = indep_snps$lead_position, ref = indep_snps$lead_ref, alt = indep_snps$lead_alt, start = min(locus_snps$position), stop = max(locus_snps$position), build = genome_build, population = population)
 
-  if (dim(ld_extracted)[1] != 0) {
+  if ((dim(ld_extracted)[1] != 0)) {
     locus_snps_ld <- ld_extracted %>%
       select(chromosome = chromosome2, position = position2, variant2, correlation) %>%
       mutate(chromosome = as.numeric(chromosome), position = as.numeric(position)) %>%
@@ -110,7 +110,7 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
     filter(p_value < plot_pvalue_threshold) %>%
     # improve overplotting
     arrange(desc(color_code)) %>%
-    ggplot(aes(position / plot_distance, -log10(p_value), fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
+    ggplot(aes(position, -log10(p_value), fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
     geom_point() +
     ggrepel::geom_text_repel(aes(label = label), size = 4, color = "black", fontface = "bold", min.segment.length = 0, box.padding = 1, alpha = 1, nudge_x = -0.025 * max(locus_snps_ld$position) / plot_distance) +
     geom_hline(yintercept = -log10(5e-8), linetype = "dashed") +
@@ -118,7 +118,7 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
     scale_size_manual(values = c(3, 8), guide = "none") +
     scale_shape_manual(values = c(21, 23), guide = "none") +
     scale_alpha_manual(values = c(0.8, 1), guide = "none") +
-    scale_x_continuous(n.breaks = 3) +
+    scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
     guides(fill = guide_legend(override.aes = list(shape = 22, size = 8))) +
     # facet_grid(trait ~ lead_rsid, scales = "free") +
     labs(
@@ -137,6 +137,23 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
       strip.text.x = element_blank()
     )
 
+  if(plot_genes) {
+    cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
+    gene_plot <- gg_gene_plot(indep_snps$lead_chromosome, indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2, build = genome_build)
+    gene_plot <- gene_plot@ggplot +
+      scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6), limits = c(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2)) +
+      labs(x = glue::glue("Position on Chromosome {unique(indep_snps$lead_chromosome)} (Mb)")) +
+      theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, unit = "pt"))
+
+
+    regional_assoc_plot <- patchwork::wrap_plots(list(regional_assoc_plot +
+                                                        labs(x = "") +
+                                                        ggplot2::theme(axis.text.x = element_blank(),
+                                                                       axis.ticks.x = element_blank(),
+                                                                       plot.margin = margin(5.5, 5.5, 0, 5.5, unit = "pt")),
+                                                      gene_plot), nrow = 2, heights = c(2, 1))
+  }
+
   if (is.null(path)) {
     return(regional_assoc_plot)
   } else {
@@ -144,3 +161,4 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
     return(regional_assoc_plot)
   }
 }
+

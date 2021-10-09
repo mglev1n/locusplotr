@@ -23,7 +23,51 @@ gg_gene_plot <- function(chr, start, end, build) {
 
   gr <- GenomicRanges::GRanges(seqnames = chr, IRanges::IRanges(start, end), strand = "*")
 
-  ggbio::autoplot(ensdb, AnnotationFilter::GRangesFilter(gr), names.expr="gene_name") +
-    ggplot2::theme_minimal()
+  ensembldb::genes(ensdb) %>%
+    plyranges::join_overlap_inner(gr) %>%
+    plyranges::filter(gene_biotype == "protein_coding") %>%
+    as_tibble() %>%
+    mutate(direction = case_when(
+      strand == "*" ~ "+",
+      TRUE ~ as.character(strand)
+    )) %>%
+    dplyr::select(gene = gene_name, seq_id, start, end, strand) %>%
+    gggenomes::gggenomes(infer_start = 0) +
+    # gggenomes::geom_seq() +
+    gggenomes::geom_gene(position = gggenomes::position_pile(offset = 0.2), shape = 4, fill = "gray80") +
+    gggenomes::geom_gene_tag(aes(label = gene), size = 3, position = gggenomes::position_pile(offset = 0.2), angle = 15) +
+    scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
+    labs(x = glue::glue("Position on Chromosome {chr} (Mb)")) +
+    ggplot2::theme_light(base_size = 16) +
+    ggplot2::theme(panel.grid.major.y = element_blank(),
+                   panel.grid.minor.y = element_blank(),
+                   axis.title.y = element_blank(),
+                   axis.ticks.y = element_blank(),
+                   axis.text.y = element_blank())
+
+  # ensembldb::genes(EnsDb.Hsapiens.v75::EnsDb.Hsapiens.v75) %>%
+  #   plyranges::join_overlap_inner(GenomicRanges::GRanges(1, ranges = IRanges::IRanges(169519049 - 500000, 169519049 + 500000),
+  #                                                        strand = "*")) %>%
+  #   plyranges::filter(gene_biotype == "protein_coding") %>%
+  #   as_tibble() %>%
+  #   mutate(direction = case_when(
+  #     strand == "*" ~ "+",
+  #     TRUE ~ as.character(strand)
+  #   )) %>%
+  #   dplyr::select(gene = gene_name, seq_id, start, end, strand) %>%
+  #   gggenomes::gggenomes(infer_start = 0) +
+  #   # gggenomes::geom_seq() +
+  #   gggenomes::geom_gene(position = gggenomes::position_pile(offset = 0.2), shape = 4, fill = "gray80") +
+  #   gggenomes::geom_gene_tag(aes(label = gene), size = 3, position = gggenomes::position_pile(offset = 0.2), angle = 15) +
+  #   scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
+  #   ggplot2::theme_light(base_size = 16) +
+  #   ggplot2::theme(panel.grid.major.y = element_blank(),
+  #                  panel.grid.minor.y = element_blank(),
+  #                  axis.title.y = element_blank(),
+  #                  axis.ticks.y = element_blank(),
+  #                  axis.text.y = element_blank())
 
 }
+
+
+
