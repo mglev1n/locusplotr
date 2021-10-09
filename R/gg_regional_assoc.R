@@ -139,19 +139,18 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
 
   if(plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
-    gene_plot <- gg_gene_plot(indep_snps$lead_chromosome, indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2, build = genome_build)
-    gene_plot <- gene_plot@ggplot +
-      scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6), limits = c(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2)) +
-      labs(x = glue::glue("Position on Chromosome {unique(indep_snps$lead_chromosome)} (Mb)")) +
-      theme(plot.margin = margin(5.5, 5.5, 5.5, 5.5, unit = "pt"))
-
+    gene_plot <- gg_gene_plot(indep_snps$lead_chromosome, indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2, build = genome_build) +
+      # scale_fill_brewer(palette = "Set3", guide = "none") +
+      theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
 
     regional_assoc_plot <- patchwork::wrap_plots(list(regional_assoc_plot +
                                                         labs(x = "") +
+                                                        xlim(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2) +
                                                         ggplot2::theme(axis.text.x = element_blank(),
                                                                        axis.ticks.x = element_blank(),
-                                                                       plot.margin = margin(5.5, 5.5, 0, 5.5, unit = "pt")),
-                                                      gene_plot), nrow = 2, heights = c(2, 1))
+                                                                       axis.title.x = element_blank(),
+                                                                       plot.margin = margin(5.5, 5.5, 0, 5.5)),
+                                                      gene_plot), nrow = 2, heights = c(3, 1))
   }
 
   if (is.null(path)) {
@@ -162,3 +161,10 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
   }
 }
 
+library(ggregionalassoc)
+
+test <- arrow::read_parquet("../Varicose-Veins-GWAMA/Data/HyPrColoc/vv_risk_loci_transancestry_20210324_FUMA_20210928.parquet") %>%
+  filter(lead_rsid == "rs6025")
+
+test %>%
+  gg_regional_assoc(lead_snps = "rs6025", , rsid = rsid, chromosome = CHR, position = POSITION, ref = Allele1, alt = Allele2, p_value = `P-value`, plot_genes = TRUE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)

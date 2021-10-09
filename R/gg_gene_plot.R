@@ -34,8 +34,9 @@ gg_gene_plot <- function(chr, start, end, build) {
     dplyr::select(gene = gene_name, seq_id, start, end, strand) %>%
     gggenomes::gggenomes(infer_start = 0) +
     # gggenomes::geom_seq() +
-    gggenomes::geom_gene(position = gggenomes::position_pile(offset = 0.2), shape = 4, fill = "gray80") +
-    gggenomes::geom_gene_tag(aes(label = gene), size = 3, position = gggenomes::position_pile(offset = 0.2), angle = 15) +
+    gggenomes::geom_gene(position = gggenomes::position_pile(offset = 0.2), shape = 4, fill = "gray80", size = 4) +
+    # gggenomes::geom_gene(aes(fill = gene), position = gggenomes::position_pile(offset = 0.2), shape = 4, size = 4) +
+    gggenomes::geom_gene_tag(aes(label = gene), size = 3, position = gggenomes::position_pile(offset = 0.2), angle = 15, nudge_y = 0.05) +
     scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
     labs(x = glue::glue("Position on Chromosome {chr} (Mb)")) +
     ggplot2::theme_light(base_size = 16) +
@@ -69,5 +70,27 @@ gg_gene_plot <- function(chr, start, end, build) {
 
 }
 
-
-
+# gggenes method
+# ensembldb::genes(EnsDb.Hsapiens.v75::EnsDb.Hsapiens.v75) %>%
+#   plyranges::join_overlap_inner(GenomicRanges::GRanges(1, ranges = IRanges::IRanges(169519049 - 500000, 169519049 + 500000),
+#                                                        strand = "*")) %>%
+#   plyranges::filter(gene_biotype == "protein_coding") %>%
+#   as_tibble() %>%
+#   mutate(direction = case_when(
+#     strand == "-" ~ FALSE,
+#     TRUE ~ TRUE
+#   )) %>%
+#   dplyr::select(gene = gene_name, seq_id, start, end, strand, direction) %>%
+#   ggplot(aes(xmin = start, xmax = end, , y = seq_id, fill = gene, forward = direction)) +
+#   gggenes::geom_gene_arrow() +
+#   facet_wrap(~ direction, ncol = 1) +
+#   # gggenes::theme_genes() +
+#   scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
+#   ggplot2::theme_light(base_size = 16) +
+#   ggplot2::theme(panel.grid.major.y = element_blank(),
+#                  panel.grid.minor.y = element_blank(),
+#                  axis.title.y = element_blank(),
+#                  axis.ticks.y = element_blank(),
+#                  axis.text.y = element_blank(),
+#                  strip.background = element_blank(),
+#                  strip.text = element_blank())
