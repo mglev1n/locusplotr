@@ -5,9 +5,9 @@ Authors@R:
     person(given = "Michael",
            family = "Levin",
            role = c("aut", "cre"),
-           email = "michael.levin@gmail.com",
+           email = "mglev1n@gmail.com",
            comment = c(ORCID = "0000-0002-9937-9932"))
-Description: Description: This package allows the user to obtain linkage disequlibrium data for any contiguous region within the genome using the LocusZoom API <https://portaldev.sph.umich.edu/>. Integrating this LD information with results from a genome-wide association study (GWAS) the user can create regional association plots.
+Description: Description: This package allows the user to obtain linkage disequlibrium data for any contiguous region within the genome using the LocusZoom API \href{https://portaldev.sph.umich.edu/}{https://portaldev.sph.umich.edu/}. By integrating this LD information with results from a genome-wide association study (GWAS) the user can create regional association plots.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -15,22 +15,24 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
     AnnotationFilter,
+    biovizBase,
     cli,
     dplyr,
     EnsDb.Hsapiens.v75,
     EnsDb.Hsapiens.v86,
     GenomicRanges,
-    gggenomes,
+    ggbio,
     ggplot2,
     ggrepel,
-    ggtree,
     glue,
     httr,
     IRanges,
+    org.Hs.eg.db,
     patchwork,
-    plyranges,
     purrr,
     readr,
     stringr,
-    thacklr,
+    tibble,
     tidyr
+Depends: 
+    R (>= 2.10)

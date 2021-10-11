@@ -17,6 +17,7 @@ gg_regional_assoc(
   plot_distance = 5e+05,
   genome_build = "GRCh37",
   population = "ALL",
+  plot_genes = FALSE,
   plot_title = NULL,
   plot_subtitle = NULL,
   path = NULL
@@ -47,6 +48,8 @@ gg_regional_assoc(
 
 \item{population}{Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information}
 
+\item{plot_genes}{Logical - Include a plot of genes/transcripts within the region of interest beneath the regional association plot (default = FALSE)}
+
 \item{plot_title}{A character string corresponding to plot title (default = NULL)}
 
 \item{plot_subtitle}{A character string corresponding to plot subtitle (default = NULL)}
@@ -59,4 +62,12 @@ A ggplot object
 \description{
 Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
 This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API \url{https://portaldev.sph.umich.edu/}) for that locus to create a regional association plot.
+}
+\examples{
+library(ggregionalassoc)
+library(tidyverse)
+test <- arrow::read_parquet("../Varicose-Veins-GWAMA/Data/HyPrColoc/vv_risk_loci_transancestry_20210324_FUMA_20210928.parquet") \%>\%
+  filter(lead_rsid == "rs6025")
+test \%>\%
+  gg_regional_assoc(lead_snps = "rs6025", , rsid = rsid, chromosome = CHR, position = POSITION, ref = Allele1, alt = Allele2, p_value = `P-value`, plot_genes = TRUE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
 }

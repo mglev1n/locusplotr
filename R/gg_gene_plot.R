@@ -11,86 +11,38 @@
 #' @export
 #'
 #' @examples
+#' gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
+
 gg_gene_plot <- function(chr, start, end, build) {
 
   if(build == "GRCh37") {
-    ensdb <- EnsDb.Hsapiens.v75::EnsDb.Hsapiens.v75
+    txb <- AnnotationDbi::loadDb("inst/extdata/txb_hg19.sqlite")
+    # txb <- txb_hg19
   } else if(build == "GRCh38") {
-    ensdb <- EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+    txb <- AnnotationDbi::loadDb("inst/extdata/txb_hg38.sqlite")
+    # txb <- txb_hg38
   } else {
     cli::cli_abort("Please provide a valid genome build")
   }
 
-  gr <- GenomicRanges::GRanges(seqnames = chr, IRanges::IRanges(start, end), strand = "*")
+  # txb <- do.call(GenomicFeatures::makeTxDb, as.list(txb))
 
-  ensembldb::genes(ensdb) %>%
-    plyranges::join_overlap_inner(gr) %>%
-    plyranges::filter(gene_biotype == "protein_coding") %>%
-    as_tibble() %>%
-    mutate(direction = case_when(
-      strand == "*" ~ "+",
-      TRUE ~ as.character(strand)
-    )) %>%
-    dplyr::select(gene = gene_name, seq_id, start, end, strand) %>%
-    gggenomes::gggenomes(infer_start = 0) +
-    # gggenomes::geom_seq() +
-    gggenomes::geom_gene(position = gggenomes::position_pile(offset = 0.2), shape = 4, fill = "gray80", size = 4) +
-    # gggenomes::geom_gene(aes(fill = gene), position = gggenomes::position_pile(offset = 0.2), shape = 4, size = 4) +
-    gggenomes::geom_gene_tag(aes(label = gene), size = 3, position = gggenomes::position_pile(offset = 0.2), angle = 15, nudge_y = 0.05) +
-    scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
-    labs(x = glue::glue("Position on Chromosome {chr} (Mb)")) +
+  gr <- GenomicRanges::GRanges(paste0("chr",chr), IRanges::IRanges(start, end), strand = "*")
+  gr.txdb <- biovizBase::crunch(txb, which = gr)
+  colnames(values(gr.txdb))[4] <- "model"
+  grl <- split(gr.txdb, gr.txdb$gene_id)
+  symbols <- AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db, keys=names(grl), columns="SYMBOL", keytype="ENTREZID")
+
+  names(grl) <- symbols[match(symbols$ENTREZID, names(grl), nomatch=0), "SYMBOL"]
+
+  # return(grl)
+
+  ggplot2::update_geom_defaults("text", list(angle = 30, hjust = 0))
+
+  plot_res <- ggbio::autoplot(grl, ggplot2::aes(type = model)) +
     ggplot2::theme_light(base_size = 16) +
-    ggplot2::theme(panel.grid.major.y = element_blank(),
-                   panel.grid.minor.y = element_blank(),
-                   axis.title.y = element_blank(),
-                   axis.ticks.y = element_blank(),
-                   axis.text.y = element_blank())
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult=c(0.15,0.25)))
 
-  # ensembldb::genes(EnsDb.Hsapiens.v75::EnsDb.Hsapiens.v75) %>%
-  #   plyranges::join_overlap_inner(GenomicRanges::GRanges(1, ranges = IRanges::IRanges(169519049 - 500000, 169519049 + 500000),
-  #                                                        strand = "*")) %>%
-  #   plyranges::filter(gene_biotype == "protein_coding") %>%
-  #   as_tibble() %>%
-  #   mutate(direction = case_when(
-  #     strand == "*" ~ "+",
-  #     TRUE ~ as.character(strand)
-  #   )) %>%
-  #   dplyr::select(gene = gene_name, seq_id, start, end, strand) %>%
-  #   gggenomes::gggenomes(infer_start = 0) +
-  #   # gggenomes::geom_seq() +
-  #   gggenomes::geom_gene(position = gggenomes::position_pile(offset = 0.2), shape = 4, fill = "gray80") +
-  #   gggenomes::geom_gene_tag(aes(label = gene), size = 3, position = gggenomes::position_pile(offset = 0.2), angle = 15) +
-  #   scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
-  #   ggplot2::theme_light(base_size = 16) +
-  #   ggplot2::theme(panel.grid.major.y = element_blank(),
-  #                  panel.grid.minor.y = element_blank(),
-  #                  axis.title.y = element_blank(),
-  #                  axis.ticks.y = element_blank(),
-  #                  axis.text.y = element_blank())
-
+  plot_res@ggplot +
+    ggplot2::theme_light(base_size = 16)
 }
-
-# gggenes method
-# ensembldb::genes(EnsDb.Hsapiens.v75::EnsDb.Hsapiens.v75) %>%
-#   plyranges::join_overlap_inner(GenomicRanges::GRanges(1, ranges = IRanges::IRanges(169519049 - 500000, 169519049 + 500000),
-#                                                        strand = "*")) %>%
-#   plyranges::filter(gene_biotype == "protein_coding") %>%
-#   as_tibble() %>%
-#   mutate(direction = case_when(
-#     strand == "-" ~ FALSE,
-#     TRUE ~ TRUE
-#   )) %>%
-#   dplyr::select(gene = gene_name, seq_id, start, end, strand, direction) %>%
-#   ggplot(aes(xmin = start, xmax = end, , y = seq_id, fill = gene, forward = direction)) +
-#   gggenes::geom_gene_arrow() +
-#   facet_wrap(~ direction, ncol = 1) +
-#   # gggenes::theme_genes() +
-#   scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6)) +
-#   ggplot2::theme_light(base_size = 16) +
-#   ggplot2::theme(panel.grid.major.y = element_blank(),
-#                  panel.grid.minor.y = element_blank(),
-#                  axis.title.y = element_blank(),
-#                  axis.ticks.y = element_blank(),
-#                  axis.text.y = element_blank(),
-#                  strip.background = element_blank(),
-#                  strip.text = element_blank())

@@ -33,7 +33,6 @@
 #' @return A tibble containing each variant within the supplied range surrounding the variant of interest, with the requested linkage disequilibrium information with respect to the variant of interest
 #' @export
 #'
-#' @examples
 ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRCh37", population = "ALL", metric = "rsquare") {
 
   # Message

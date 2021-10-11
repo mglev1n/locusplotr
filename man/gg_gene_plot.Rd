@@ -21,3 +21,6 @@ gg_gene_plot(chr, start, end, build)
 \description{
 Returns a ggplot containing the genes within a specified genomic region. The function uses database connections to EnsDb.Hsapiens.v75 (hg19/GRCh37) or EnsDb.Hsapiens.v86 (hg38/GRCh38) to identify genes within the specified region, and uses the ggbio package to create the plot.
 }
+\examples{
+gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
+}
