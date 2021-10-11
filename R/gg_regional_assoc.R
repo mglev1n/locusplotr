@@ -25,6 +25,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(ggregionalassoc)
 #' library(tidyverse)
 #' test <- arrow::read_parquet("../Varicose-Veins-GWAMA/Data/HyPrColoc/vv_risk_loci_transancestry_20210324_FUMA_20210928.parquet") %>%
@@ -32,6 +33,7 @@
 
 #' test %>%
 #'   gg_regional_assoc(lead_snps = "rs6025", , rsid = rsid, chromosome = CHR, position = POSITION, ref = Allele1, alt = Allele2, p_value = `P-value`, plot_genes = TRUE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
+#' }
 
 
 gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
@@ -115,7 +117,7 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
   # return(locus_snps_ld)
 
   # Make Plot
-  regional_assoc_plot <- locus_snps_ld %>%
+  suppressMessages(regional_assoc_plot <- locus_snps_ld %>%
     filter(p_value < plot_pvalue_threshold) %>%
     # improve overplotting
     arrange(desc(color_code)) %>%
@@ -152,7 +154,7 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
       # strip.background = element_rect(fill = "grey90"),
       strip.text = element_text(color = "black", face = "bold"),
       strip.text.x = element_blank()
-    )
+    ))
 
   if(plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
@@ -162,14 +164,14 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
       scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6), limits = c(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2)) +
       theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
 
-    regional_assoc_plot <- patchwork::wrap_plots(list(regional_assoc_plot +
+    suppressMessages(regional_assoc_plot <- patchwork::wrap_plots(list(regional_assoc_plot +
                                                         labs(x = "") +
                                                         xlim(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2) +
                                                         ggplot2::theme(axis.text.x = element_blank(),
                                                                        axis.ticks.x = element_blank(),
                                                                        axis.title.x = element_blank(),
                                                                        plot.margin = margin(5.5, 5.5, 0, 5.5)),
-                                                      gene_plot), nrow = 2, heights = c(2, 1))
+                                                      gene_plot), nrow = 2, heights = c(2, 1)))
   }
 
   if (is.null(path)) {

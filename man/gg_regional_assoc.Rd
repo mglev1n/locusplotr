@@ -64,10 +64,12 @@ Returns a ggplot object containing a regional association plot (-log10(p-value) 
 This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API \url{https://portaldev.sph.umich.edu/}) for that locus to create a regional association plot.
 }
 \examples{
+\dontrun{
 library(ggregionalassoc)
 library(tidyverse)
 test <- arrow::read_parquet("../Varicose-Veins-GWAMA/Data/HyPrColoc/vv_risk_loci_transancestry_20210324_FUMA_20210928.parquet") \%>\%
   filter(lead_rsid == "rs6025")
 test \%>\%
   gg_regional_assoc(lead_snps = "rs6025", , rsid = rsid, chromosome = CHR, position = POSITION, ref = Allele1, alt = Allele2, p_value = `P-value`, plot_genes = TRUE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
+}
 }

@@ -15,11 +15,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports: 
     AnnotationFilter,
+    AnnotationDbi,
     biovizBase,
     cli,
     dplyr,
-    EnsDb.Hsapiens.v75,
-    EnsDb.Hsapiens.v86,
     GenomicRanges,
     ggbio,
     ggplot2,
@@ -31,6 +30,7 @@ Imports:
     patchwork,
     purrr,
     readr,
+    scales,
     stringr,
     tibble,
     tidyr
