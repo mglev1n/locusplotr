@@ -1,4 +1,4 @@
-Package: ggregionalassoc
+Package: locusplotr
 Title: Create Regional Association Plots
 Version: 0.0.0.9000
 Authors@R: 
@@ -33,6 +33,7 @@ Imports:
     scales,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    callr
 Depends: 
     R (>= 2.10)

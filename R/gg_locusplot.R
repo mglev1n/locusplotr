@@ -1,5 +1,5 @@
 # Function to plot regional association with LD
-#' gg_regional_assoc
+#' gg_locusplot
 #'
 #' Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
 #' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/>) for that locus to create a regional association plot.
@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(ggregionalassoc)
+#' library(locusplotr)
 #' library(tidyverse)
 #' test <- arrow::read_parquet("../Varicose-Veins-GWAMA/Data/HyPrColoc/vv_risk_loci_transancestry_20210324_FUMA_20210928.parquet") %>%
 #'   filter(lead_rsid == "rs6025")
@@ -36,7 +36,7 @@
 #' }
 
 
-gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
+gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   df <- df %>%
     select(rsid = {{ rsid }}, chromosome = {{ chromosome }}, position = {{ position }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
     mutate_if(is.factor, as.character) %>%
@@ -48,7 +48,7 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
 
   # return(indep_snps)
 
-  locus_snps <- df %>%
+  suppressMessages(locus_snps <- df %>%
     filter(rsid %in% indep_snps$lead_rsid) %>%
     select(chromosome, position, lead_rsid = rsid) %>%
     pmap_dfr(function(chromosome_filter = first, position_filter = second, lead_rsid = third) {
@@ -56,13 +56,13 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
         filter(chromosome == chromosome_filter & between(position, position_filter - plot_distance / 2, position_filter + plot_distance / 2)) %>%
         dplyr::mutate(lead_rsid = lead_rsid) %>%
         left_join(indep_snps)
-    })
+    }))
 
   # return(locus_snps)
 
   # Extract LD and format colors
   # consider adding error handling if we can't extract LD - eg. just plot without colors
-  possibly_ld_extract_locuszoom <- possibly(ld_extract_locuszoom, otherwise = NULL)
+  possibly_ld_extract_locuszoom <- purrr::possibly(ld_extract_locuszoom, otherwise = NULL)
 
   ld_extracted <- possibly_ld_extract_locuszoom(chrom = indep_snps$lead_chromosome, pos = indep_snps$lead_position, ref = indep_snps$lead_ref, alt = indep_snps$lead_alt, start = min(locus_snps$position), stop = max(locus_snps$position), build = genome_build, population = population)
 
@@ -158,26 +158,26 @@ gg_regional_assoc <- function(df, lead_snps, rsid = rsid, chromosome = chromosom
 
   if(plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
-    gene_plot <- gg_gene_plot(indep_snps$lead_chromosome, indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2, build = genome_build) +
+    gene_plot <- callr::r(function(chr, start, end, build) {locusplotr::gg_gene_plot(chr, start, end, build)}, args = list(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance/2, end = indep_snps$lead_position + plot_distance/2, build = genome_build)) +
       labs(x = glue::glue("Position on Chromosome {indep_snps$lead_chromosome} (Mb)")) +
       # scale_fill_brewer(palette = "Set3", guide = "none") +
       scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1/1e6), limits = c(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2)) +
       theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
 
-    suppressMessages(regional_assoc_plot <- patchwork::wrap_plots(list(regional_assoc_plot +
+    suppressWarnings(suppressMessages(regional_assoc_plot <- patchwork::wrap_plots(list(regional_assoc_plot +
                                                         labs(x = "") +
                                                         xlim(indep_snps$lead_position - plot_distance/2, indep_snps$lead_position + plot_distance/2) +
                                                         ggplot2::theme(axis.text.x = element_blank(),
                                                                        axis.ticks.x = element_blank(),
                                                                        axis.title.x = element_blank(),
                                                                        plot.margin = margin(5.5, 5.5, 0, 5.5)),
-                                                      gene_plot), nrow = 2, heights = c(2, 1)))
+                                                      gene_plot), nrow = 2, heights = c(2, 1))))
   }
 
   if (is.null(path)) {
-    return(regional_assoc_plot)
+    return(suppressWarnings(suppressMessages(regional_assoc_plot)))
   } else {
-    ggsave(regional_assoc_plot, filename = paste0(path, unique(indep_snps$lead_rsid), ".pdf"), units = "in", height = 8.5, width = 11, device = "pdf")
-    return(regional_assoc_plot)
+    suppressWarnings(suppressMessages(ggsave(regional_assoc_plot, filename = paste0(path, unique(indep_snps$lead_rsid), ".pdf"), units = "in", height = 8.5, width = 11, device = "pdf")))
+    return(suppressWarningssuppressMessages(regional_assoc_plot))
   }
 }

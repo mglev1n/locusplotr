@@ -19,10 +19,10 @@
 gg_gene_plot <- function(chr, start, end, build) {
 
   if(build == "GRCh37") {
-    txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "ggregionalassoc"))
+    txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg19
   } else if(build == "GRCh38") {
-    txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "ggregionalassoc"))
+    txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg38
   } else {
     cli::cli_abort("Please provide a valid genome build")
