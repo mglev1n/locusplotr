@@ -14,6 +14,7 @@ gg_locusplot(
   alt = alt,
   p_value = p_value,
   plot_pvalue_threshold = 0.1,
+  plot_subsample_prop = 0.1,
   plot_distance = 5e+05,
   genome_build = "GRCh37",
   population = "ALL",
@@ -42,11 +43,13 @@ gg_locusplot(
 
 \item{plot_pvalue_threshold}{Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance}
 
+\item{plot_subsample_prop}{Proportion of points above p-value threshold to plot (default = 0.1) - reducing the number of points decreases file size and improves performance}
+
 \item{plot_distance}{Integer corresponding to the size of the locus that should be plotted}
 
 \item{genome_build}{Character - one of "GRCh37" or "GRCh38"}
 
-\item{population}{Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information}
+\item{population}{Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")}
 
 \item{plot_genes}{Logical - Include a plot of genes/transcripts within the region of interest beneath the regional association plot (default = FALSE)}
 

@@ -13,6 +13,7 @@
 #' @param alt Alternate/non-effect allele column
 #' @param p_value P-value column
 #' @param plot_pvalue_threshold Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance
+#' @param plot_subsample_prop Proportion of points above p-value threshold to plot (default = 0.1) - reducing the number of points decreases file size and improves performance
 #' @param plot_distance Integer corresponding to the size of the locus that should be plotted
 #' @param genome_build Character - one of "GRCh37" or "GRCh38"
 #' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")
@@ -36,7 +37,7 @@
 #' }
 
 
-gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
+gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, position = position, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   df <- df %>%
     select(rsid = {{ rsid }}, chromosome = {{ chromosome }}, position = {{ position }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
     mutate_if(is.factor, as.character) %>%
@@ -66,7 +67,9 @@ gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, po
 
   ld_extracted <- possibly_ld_extract_locuszoom(chrom = indep_snps$lead_chromosome, pos = indep_snps$lead_position, ref = indep_snps$lead_ref, alt = indep_snps$lead_alt, start = min(locus_snps$position), stop = max(locus_snps$position), build = genome_build, population = population)
 
+  # Create dataframe with variants at locus, LD information, color codes, and labels in preparation for plotting
   if ((dim(ld_extracted)[1] != 0)) {
+    # Join GWAS locus df with LD information
     locus_snps_ld <- ld_extracted %>%
       select(chromosome = chromosome2, position = position2, variant2, correlation) %>%
       mutate(chromosome = as.numeric(chromosome), position = as.numeric(position)) %>%
@@ -75,7 +78,10 @@ gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, po
       right_join(locus_snps, by = c("chromosome" = "chromosome", "position" = "position")) %>%
       filter((ref.x == ref.y & alt.x == alt.y) | (ref.x == alt.y & alt.x == ref.y)) %>%
       select(-ends_with(".y"), -chr_pos) %>%
-      rename_with(~ str_replace(.x, ".x", ""), .cols = ends_with(".x")) %>%
+      rename_with(~ str_replace(.x, ".x", ""), .cols = ends_with(".x"))
+
+    # Create color codes and labels
+    locus_snps_ld <- locus_snps_ld %>%
       mutate(color_code = as.character(cut(correlation, breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), labels = c("blue4", "skyblue", "darkgreen", "orange", "red"), include.lowest = TRUE))) %>%
       mutate(legend_label = as.character(cut(correlation, breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), labels = c("0 - 0.2", "0.2 - 0.4", "0.4 - 0.6", "0.6 - 0.8", "0.8 - 1"), include.lowest = TRUE))) %>%
       mutate(lead = rsid == lead_rsid) %>%
@@ -93,7 +99,10 @@ gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, po
         TRUE ~ legend_label
       )) %>%
       mutate(legend_label = fct_relevel(legend_label, "Reference", "0.8 - 1", "0.6 - 0.8", "0.4 - 0.6", "0.2 - 0.4", "0 - 0.2"))
+
   } else {
+    # Deal with scenario where lead variant not present in LD database
+    cli::cli_alert_info("No linkage disequilibrium information found")
     locus_snps_ld <- locus_snps %>%
       mutate(correlation = NA_integer_) %>%
       mutate(lead = rsid == lead_rsid) %>%
@@ -103,29 +112,45 @@ gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, po
       )) %>%
       mutate(color_code = case_when(
         rsid == lead_rsid ~ "purple",
-        TRUE ~ color_code
+        TRUE ~ "grey50"
       )) %>%
-      mutate(color_code = fct_relevel(color_code, "purple", NA_character_)) %>%
+    # %>%
+    #   mutate(color_code = fct_relevel(color_code, "purple", "white")) %>%
       mutate(legend_label = case_when(
         rsid == lead_rsid ~ "Reference",
-        TRUE ~ legend_label
-      )) %>%
-      mutate(legend_label = fct_relevel(legend_label, "Reference", NA_character_))
+        TRUE ~ "Other"
+      ))
+
+    # %>%
+    #   mutate(legend_label = fct_relevel(legend_label, "Reference", "NA"))
   }
 
 
   # return(locus_snps_ld)
 
-  # Make Plot
+  # Make Plot (sample non-significant p-values to reduce overplotting)
   suppressMessages(regional_assoc_plot <- locus_snps_ld %>%
-    filter(p_value < plot_pvalue_threshold) %>%
-    # improve overplotting
+    filter(p_value < plot_pvalue_threshold | correlation > 0.2 | legend_label == "Reference") %>% # improve overplotting
+      bind_rows(locus_snps_ld %>%
+                  filter(p_value >= plot_pvalue_threshold & correlation < 0.2 & legend_label != "Reference") %>%
+                  dplyr::slice_sample(prop = plot_subsample_prop)) %>%
     arrange(desc(color_code)) %>%
     ggplot(aes(position, -log10(p_value), fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
     geom_point() +
-    ggrepel::geom_text_repel(aes(label = label), size = 4, color = "black", fontface = "bold", min.segment.length = 0, box.padding = 1, alpha = 1, nudge_x = -0.1 * max(locus_snps_ld$position)) +
+    ggrepel::geom_label_repel(aes(label = label),
+                             size = 4,
+                             color = "black",
+                             fontface = "bold",
+                             fill = "white",
+                             # bg.color = "white",
+                             # bg.r = 0.1,
+                             min.segment.length = 0,
+                             box.padding = 1,
+                             alpha = 1,
+                             nudge_x = -0.05 * max(locus_snps_ld$position),
+                             nudge_y = -log10(min(locus_snps_ld$p_value))) +
     geom_hline(yintercept = -log10(5e-8), linetype = "dashed") +
-    scale_fill_identity(parse(text = "r^2"), guide = "legend", labels = levels(locus_snps_ld$legend_label), na.translate = FALSE) +
+    scale_fill_identity(parse(text = "r^2"), guide = "legend", labels = levels(forcats::fct_drop(locus_snps_ld$legend_label)), na.translate = FALSE) +
     scale_size_manual(values = c(3, 8), guide = "none") +
     scale_shape_manual(values = c(21, 23), guide = "none") +
     scale_alpha_manual(values = c(0.8, 1), guide = "none") +
