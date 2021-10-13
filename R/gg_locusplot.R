@@ -200,9 +200,9 @@ gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, po
   }
 
   if (is.null(path)) {
-    return(suppressWarnings(suppressMessages(regional_assoc_plot)))
+    return(regional_assoc_plot)
   } else {
-    suppressWarnings(suppressMessages(ggsave(regional_assoc_plot, filename = paste0(path, unique(indep_snps$lead_rsid), ".pdf"), units = "in", height = 8.5, width = 11, device = "pdf")))
-    return(suppressWarningssuppressMessages(regional_assoc_plot))
+    ggsave(regional_assoc_plot, filename = paste0(path, stringr::str_replace_all(unique(indep_snps$lead_rsid), "[^[:alnum:]]", "_"), ".pdf"), units = "in", height = 8.5, width = 11, device = "pdf")
+    return(regional_assoc_plot)
   }
 }
