@@ -3,3 +3,4 @@
 ^LICENSE\.md$
 ^R/txdb-setup\.R$
 ^\.github$
+^R/generate_sticker\.R$

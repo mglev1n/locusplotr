@@ -6,6 +6,8 @@
 \alias{locusplotr-package}
 \title{locusplotr: Create Regional Association Plots}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 Description: This package allows the user to obtain linkage disequlibrium data for any contiguous region within the genome using the LocusZoom API \href{https://portaldev.sph.umich.edu/}{https://portaldev.sph.umich.edu/}. By integrating this LD information with results from a genome-wide association study (GWAS) the user can create regional association plots.
 }
 \author{
