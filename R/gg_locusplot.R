@@ -133,8 +133,8 @@ gg_locusplot <- function(df, lead_snps, rsid = rsid, chromosome = chromosome, po
     guides(fill = guide_legend(override.aes = list(shape = 22, size = 6))) +
     # facet_grid(trait ~ lead_rsid, scales = "free") +
     labs(
-      # title = plot_title,
-      # subtitle = plot_subtitle,
+      title = plot_title,
+      subtitle = plot_subtitle,
       x = glue::glue("Position on Chromosome {unique(indep_snps$lead_chromosome)} (Mb)"),
       y = bquote(-log[10]("P-value"))
     ) +
