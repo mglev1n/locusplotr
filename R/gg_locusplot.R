@@ -15,7 +15,7 @@
 #' @param plot_pvalue_threshold Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance
 #' @param plot_distance Integer corresponding to the size of the locus that should be plotted
 #' @param genome_build Character - one of "GRCh37" or "GRCh38"
-#' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information
+#' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")
 #' @param plot_genes Logical - Include a plot of genes/transcripts within the region of interest beneath the regional association plot (default = FALSE)
 #' @param plot_title A character string corresponding to plot title (default = NULL)
 #' @param plot_subtitle A character string corresponding to plot subtitle (default = NULL)
