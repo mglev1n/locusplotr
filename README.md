@@ -14,13 +14,13 @@ The goal of `locusplotr` is to allow users to integrate genome-wide
 association study results with linkage disequilibrium data to create
 regional association plots surrounding a locus of interest using the
 `gg_locusplot` function. In the background, this package uses a function
-`ld_extract_locuszoom` to query the University of Michigan LocusZoom API
-(<https://portaldev.sph.umich.edu/>) to obtain linkage disequilibrium
-data for a genetic variant and genomic region of interest. The
-`gg_locusplot` function allows the user to provide GWAS summary
-statistics for a region of interest and a reference variant, and will 1)
-use the `ld_extract_locuszoom` function to obtain LD information and 2)
-return a ggplot object with a regional association plot.
+named `ld_extract_locuszoom` to query the University of Michigan
+LocusZoom API (<https://portaldev.sph.umich.edu/>) to obtain linkage
+disequilibrium data for a genetic variant and genomic region of
+interest. The `gg_locusplot` function allows the user to provide GWAS
+summary statistics for a region of interest and a reference variant, and
+will 1) use the `ld_extract_locuszoom` function to obtain LD information
+and 2) return a ggplot object with a regional association plot.
 
 ## Installation
 
@@ -76,7 +76,7 @@ fto_locus_df %>%
   )
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" />
 
 Use the `plot_genes` argument to include a plot of genes within the
 region beneath the main regional association plot.
@@ -95,4 +95,4 @@ gg_locusplot(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" />
