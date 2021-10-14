@@ -82,4 +82,3 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRC
 
   return(suppressMessages(.json_res_parsed_df %>% readr::type_convert()))
 }
-

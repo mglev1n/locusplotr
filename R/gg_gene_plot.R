@@ -14,36 +14,34 @@
 #' \dontrun{
 #' gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
 #' }
-
-
+#'
 gg_gene_plot <- function(chr, start, end, build) {
-
-  if(build == "GRCh37") {
+  if (build == "GRCh37") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg19
-  } else if(build == "GRCh38") {
+  } else if (build == "GRCh38") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg38
   } else {
     cli::cli_abort("Please provide a valid genome build")
   }
 
-  gr <- GenomicRanges::GRanges(paste0("chr",chr), IRanges::IRanges(start, end), strand = "*")
+  gr <- GenomicRanges::GRanges(paste0("chr", chr), IRanges::IRanges(start, end), strand = "*")
   gr.txdb <- biovizBase::crunch(txb, which = gr)
   colnames(values(gr.txdb))[4] <- "model"
   grl <- split(gr.txdb, gr.txdb$gene_id)
-  suppressMessages(symbols <- AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db, keys=names(grl), columns="SYMBOL", keytype="ENTREZID"))
+  suppressMessages(symbols <- AnnotationDbi::select(org.Hs.eg.db::org.Hs.eg.db, keys = names(grl), columns = "SYMBOL", keytype = "ENTREZID"))
 
-  names(grl) <- symbols[match(symbols$ENTREZID, names(grl), nomatch=0), "SYMBOL"]
+  names(grl) <- symbols[match(symbols$ENTREZID, names(grl), nomatch = 0), "SYMBOL"]
 
   # return(grl)
-  grl <- GenomicRanges::GRangesList(grl, compress=TRUE)
+  grl <- GenomicRanges::GRangesList(grl, compress = TRUE)
 
   ggplot2::update_geom_defaults("text", list(angle = 30, hjust = 0))
 
   suppressMessages(plot_res <- ggbio::autoplot(grl, ggplot2::aes(type = model)) +
     ggplot2::theme_light(base_size = 16) +
-    ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult=c(0.15,0.25))))
+    ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult = c(0.15, 0.25))))
 
   suppressMessages(plot_res@ggplot +
     ggplot2::theme_light(base_size = 16))

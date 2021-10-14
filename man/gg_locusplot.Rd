@@ -6,7 +6,7 @@
 \usage{
 gg_locusplot(
   df,
-  lead_snps,
+  lead_snp,
   rsid = rsid,
   chromosome = chromosome,
   position = position,
@@ -27,7 +27,7 @@ gg_locusplot(
 \arguments{
 \item{df}{Dataframe containing columns with rsid, chromosome, position, reference/effect allele, alternate/non-effect allele, and p-value for all variants within the range of interest}
 
-\item{lead_snps}{A character vector containing the lead variant of interest}
+\item{lead_snp}{A character vector containing the lead variant of interest}
 
 \item{rsid}{Rsid column}
 
@@ -68,11 +68,6 @@ This function allows the user to integrate genome wide association study (GWAS) 
 }
 \examples{
 \dontrun{
-library(locusplotr)
-library(tidyverse)
-test <- arrow::read_parquet("../Varicose-Veins-GWAMA/Data/HyPrColoc/vv_risk_loci_transancestry_20210324_FUMA_20210928.parquet") \%>\%
-  filter(lead_rsid == "rs6025")
-test \%>\%
-  gg_regional_assoc(lead_snps = "rs6025", , rsid = rsid, chromosome = CHR, position = POSITION, ref = Allele1, alt = Allele2, p_value = `P-value`, plot_genes = TRUE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
+gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chromosome = chromosome, position = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
 }
 }
