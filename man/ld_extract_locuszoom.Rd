@@ -41,3 +41,8 @@ A tibble containing each variant within the supplied range surrounding the varia
 \description{
 This function allows the user to extract linkage disequilibrium statistics between a variant of interest and surrounding variants within a contiguous genomic region. This function uses the University of Michigan LocusZoom API (\url{https://portaldev.sph.umich.edu/}) to obtain LD information, and allows the user to specify genome-build and ancestry of interest.
 }
+\examples{
+\dontrun{
+ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
+}
+}

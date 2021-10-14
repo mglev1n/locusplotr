@@ -56,12 +56,12 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chromosome = chromosome, pos
 
   # Extract LD and format colors
   # consider adding error handling if we can't extract LD - eg. just plot without colors
-  possibly_ld_extract_locuszoom <- purrr::possibly(ld_extract_locuszoom, otherwise = NULL)
+  possibly_ld_extract_locuszoom <- purrr::possibly(locusplotr::ld_extract_locuszoom, otherwise = NULL)
 
   ld_extracted <- possibly_ld_extract_locuszoom(chrom = indep_snps$lead_chromosome, pos = indep_snps$lead_position, ref = indep_snps$lead_ref, alt = indep_snps$lead_alt, start = min(locus_snps$position), stop = max(locus_snps$position), build = genome_build, population = population)
 
   # Create dataframe with variants at locus, LD information, color codes, and labels in preparation for plotting
-  if ((dim(ld_extracted)[1] != 0)) {
+  if ((dim(ld_extracted[1]) != 0)) {
     # Join GWAS locus df with LD information
     locus_snps_ld <- ld_extracted %>%
       dplyr::select(chromosome = chromosome2, position = position2, variant2, correlation) %>%

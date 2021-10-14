@@ -14,7 +14,7 @@
 #' \dontrun{
 #' gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
 #' }
-#'
+
 gg_gene_plot <- function(chr, start, end, build) {
   if (build == "GRCh37") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))

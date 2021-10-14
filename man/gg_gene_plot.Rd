@@ -25,5 +25,4 @@ Returns a ggplot containing the genes within a specified genomic region. The fun
 \dontrun{
 gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
 }
-
 }

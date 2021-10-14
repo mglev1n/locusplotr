@@ -1,20 +1,3 @@
-# Hello, world!
-#
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
-#
-# You can learn more about package authoring with RStudio at:
-#
-#   http://r-pkgs.had.co.nz/
-#
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Install Package:           'Cmd + Shift + B'
-#   Check Package:             'Cmd + Shift + E'
-#   Test Package:              'Cmd + Shift + T'
-
-
-
 # Function to extract LD
 #' ld_extract_locuszoom
 #'
@@ -33,6 +16,11 @@
 #' @return A tibble containing each variant within the supplied range surrounding the variant of interest, with the requested linkage disequilibrium information with respect to the variant of interest
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
+#' }
+
 ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRCh37", population = "ALL", metric = "rsquare") {
 
   # Message
