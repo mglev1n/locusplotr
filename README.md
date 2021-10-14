@@ -38,6 +38,7 @@ statistics at a locus of interest
 
 ``` r
 library(locusplotr)
+
 fto_locus_df
 #> # A tibble: 19,119 × 9
 #>    chromosome position rsid    effect_allele other_allele    eaf  effect std_err
@@ -62,6 +63,7 @@ LocusZoom API <https://portaldev.sph.umich.edu/>.
 
 ``` r
 library(tidyverse)
+
 fto_locus_df %>%
   gg_locusplot(
     lead_snp = "rs62033413",

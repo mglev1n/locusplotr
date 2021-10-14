@@ -35,12 +35,14 @@ devtools::install_github("mglev1n/locusplotr")
 Start with a dataframe containing genome wide association study summary statistics at a locus of interest
 ```{r example}
 library(locusplotr)
+
 fto_locus_df
 ```
 Use the `gg_locusplot` function to create a regional association plot. This calls the `ld_extract_locuszoom` function in the background to fetch linkage disequilibrium data from the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/>.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, dpi = 300}
 library(tidyverse)
+
 fto_locus_df %>%
   gg_locusplot(
     lead_snp = "rs62033413",
@@ -54,7 +56,7 @@ fto_locus_df %>%
 ```
 
 Use the `plot_genes` argument to include a plot of genes within the region beneath the main regional association plot.
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, dpi = 300}
 gg_locusplot(
   df = fto_locus_df,
   lead_snp = "rs62033413",
