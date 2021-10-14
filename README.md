@@ -101,7 +101,7 @@ Additional arguments allow the user to specify the genome build (GRCh37,
 GRCH38), population (Eg. ALL, AMR, AFR, EUR, EAS, etc.), plot
 title/subtitle, and directory to save the regional association plot as a
 .pdf.  
-<br>
+<br><br>
 
 The `ld_extract_locuszoom` function, called in the background by
 `gg_locusplot`, can also be used to retrieve linkage disequilibrium data
