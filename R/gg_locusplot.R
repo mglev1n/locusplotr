@@ -5,7 +5,7 @@
 #' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/>) for that locus to create a regional association plot.
 #'
 #' @param df Dataframe containing columns with rsid, chromosome, position, reference/effect allele, alternate/non-effect allele, and p-value for all variants within the range of interest
-#' @param lead_snp A character vector containing the lead variant of interest
+#' @param lead_snp A character vector containing a lead variant of interest. When NULL (default), the variant with the lowest p-value will be selected as the lead variant.
 #' @param rsid Rsid column
 #' @param chrom Chromosome column
 #' @param pos Position column
@@ -13,7 +13,7 @@
 #' @param alt Alternate/non-effect allele column
 #' @param p_value P-value column
 #' @param plot_pvalue_threshold Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance
-#' @param plot_subsample_prop Proportion of points above p-value threshold to plot (default = 0.1) - reducing the number of points decreases file size and improves performance
+#' @param plot_subsample_prop Proportion of points above p-value threshold to plot (default = 0.1; range = 0-1) - reducing the number of points decreases file size and improves performance
 #' @param plot_distance Integer corresponding to the size of the locus that should be plotted
 #' @param genome_build Character - one of "GRCh37" or "GRCh38"
 #' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")
@@ -33,11 +33,12 @@
 #' # Use "plot_genes = TRUE" to add a plot of genes within the region beneath the regional association plot
 #' gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
 #' }
+#'
+gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
 
-gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
-
+  # Check input arguments to ensure they are of the correct type and within reasonable ranges
   checkmate::assert_data_frame(df)
-  checkmate::assert_string(lead_snp)
+  # checkmate::assert_string(lead_snp)
   checkmate::assert_numeric(plot_pvalue_threshold, upper = 1)
   checkmate::assert_numeric(plot_subsample_prop, lower = 0, upper = 1)
   checkmate::assert_numeric(plot_distance, lower = 0)
@@ -49,12 +50,24 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
     mutate_if(is.factor, as.character) %>%
     mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt))
 
-  indep_snps <- df %>%
-    select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt) %>%
-    filter(lead_rsid %in% lead_snp)
+  # Create df containing information about lead SNP (by default, select SNP with lowest p-value, otherwise take user-supplied value)
+  if (is.null(lead_snp)) {
+    indep_snps <- df %>%
+      slice_min(p_value, with_ties = FALSE, n = 1) %>%
+      select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt)
 
-  # return(indep_snps)
+    cli::cli_alert_info("No lead_snp supplied. Defaulting to {indep_snps$lead_rsid} - {indep_snps$lead_chromosome}:{{indep_snps$lead_position}, which has the lowest p-value in the region")
+  } else {
+    # Ensure lead_snp supplied by user is a string
+    checkmate::assert_string(lead_snp)
 
+    indep_snps <- df %>%
+      select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt) %>%
+      filter(lead_rsid == lead_snp) %>%
+      distinct(lead_rsid, .keep_all = TRUE)
+  }
+
+  # Create dataframe of variants within the region size specified by the user
   suppressMessages(locus_snps <- df %>%
     filter(rsid %in% indep_snps$lead_rsid) %>%
     select(chromosome, position, lead_rsid = rsid) %>%
@@ -65,16 +78,13 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
         left_join(indep_snps)
     }))
 
-  # return(locus_snps)
-
   # Extract LD and format colors
-  # consider adding error handling if we can't extract LD - eg. just plot without colors
   possibly_ld_extract_locuszoom <- purrr::possibly(locusplotr::ld_extract_locuszoom, otherwise = NULL)
 
   ld_extracted <- possibly_ld_extract_locuszoom(chrom = indep_snps$lead_chromosome, pos = indep_snps$lead_position, ref = indep_snps$lead_ref, alt = indep_snps$lead_alt, start = min(locus_snps$position), stop = max(locus_snps$position), genome_build = genome_build, population = population)
 
   # Create dataframe with variants at locus, LD information, color codes, and labels in preparation for plotting
-  if ((dim(ld_extracted)[1] != 0)) {
+  if (!(is.null(ld_extracted))) {
     # Join GWAS locus df with LD information
     locus_snps_ld <- ld_extracted %>%
       select(chromosome = chromosome2, position = position2, variant2, correlation) %>%
@@ -106,7 +116,7 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
       )) %>%
       mutate(legend_label = forcats::fct_relevel(legend_label, "Reference", "0.8 - 1", "0.6 - 0.8", "0.4 - 0.6", "0.2 - 0.4", "0 - 0.2"))
   } else {
-    # Deal with scenario where lead variant not present in LD database
+    # Deal with scenario where lead variant is not present in LD database
     cli::cli_alert_info("No linkage disequilibrium information found")
     locus_snps_ld <- locus_snps %>%
       mutate(correlation = NA_integer_) %>%
@@ -119,21 +129,13 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
         rsid == lead_rsid ~ "purple",
         TRUE ~ "grey50"
       )) %>%
-      # %>%
-      #   mutate(color_code = fct_relevel(color_code, "purple", "white")) %>%
       mutate(legend_label = case_when(
         rsid == lead_rsid ~ "Reference",
         TRUE ~ "Other"
       ))
-
-    # %>%
-    #   mutate(legend_label = fct_relevel(legend_label, "Reference", "NA"))
   }
 
-
-  # return(locus_snps_ld)
-
-  # Make Plot (sample non-significant p-values to reduce overplotting)
+  # Make plot (sample non-significant p-values to reduce overplotting)
   suppressMessages(regional_assoc_plot <- locus_snps_ld %>%
     filter(p_value < plot_pvalue_threshold | correlation > 0.2 | legend_label == "Reference") %>% # improve overplotting
     bind_rows(locus_snps_ld %>%
@@ -147,8 +149,6 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
       color = "black",
       fontface = "bold",
       fill = "white",
-      # bg.color = "white",
-      # bg.r = 0.1,
       min.segment.length = 0,
       box.padding = 1,
       alpha = 1,
@@ -163,7 +163,6 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
     scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1 / 1e6)) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
     guides(fill = guide_legend(override.aes = list(shape = 22, size = 6))) +
-    # facet_grid(trait ~ lead_rsid, scales = "free") +
     labs(
       title = plot_title,
       subtitle = plot_subtitle,
@@ -177,21 +176,19 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
       legend.key = element_rect(size = 3, fill = NA, colour = NA),
       legend.text = element_text(size = 10),
       legend.title = element_text(size = 10),
-      # legend.position = "top",
       legend.margin = margin(1, 1, 1, 1),
       legend.justification = c("right", "top"),
       legend.position = c(0.99, 0.99),
       legend.spacing = unit(0, "pt"),
-      # legend.box.background = element_rect(color = "grey30"),
-      # strip.background = element_rect(fill = "grey90"),
       strip.text = element_text(color = "black", face = "bold"),
       strip.text.x = element_blank()
     ))
 
+  # Add plot of genes if reuested by user
   if (plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
     gene_plot <- callr::r(function(chr, start, end, genome_build) {
-      locusplotr::gg_gene_plot(chr, start, end, genome_build)
+      locusplotr::gg_gene_plot(chr, start, end, genome_build) # nocov
     }, args = list(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build)) +
       labs(x = glue::glue("Position on Chromosome {indep_snps$lead_chromosome} (Mb)")) +
       # scale_fill_brewer(palette = "Set3", guide = "none") +
@@ -212,6 +209,7 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
     ), nrow = 2, heights = c(2, 1))))
   }
 
+  # Return +/- save ggplot object
   if (is.null(path)) {
     return(regional_assoc_plot)
   } else {

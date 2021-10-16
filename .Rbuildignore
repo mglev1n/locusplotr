@@ -5,3 +5,6 @@
 ^\.github$
 ^R/generate_sticker\.R$
 ^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

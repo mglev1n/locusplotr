@@ -14,24 +14,25 @@
 #' \dontrun{
 #' gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
 #' }
-
+#'
 gg_gene_plot <- function(chr, start, end, genome_build) {
 
+  # ensure function arguments are of the correct type
   checkmate::assert_numeric(chr)
   checkmate::assert_numeric(start)
   checkmate::assert_numeric(end)
   checkmate::assert_choice(genome_build, choices = c("GRCh37", "GRCh38"))
 
+  # select appropriate genome database for identifying genes within the specified region
   if (genome_build == "GRCh37") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg19
   } else if (genome_build == "GRCh38") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg38
-  } else {
-    cli::cli_abort("Please provide a valid genome build")
   }
 
+  # Identify genes in region, create model with exons and gene symbols as labels
   gr <- GenomicRanges::GRanges(paste0("chr", chr), IRanges::IRanges(start, end), strand = "*")
   gr.txdb <- biovizBase::crunch(txb, which = gr)
   colnames(values(gr.txdb))[4] <- "model"
@@ -40,15 +41,17 @@ gg_gene_plot <- function(chr, start, end, genome_build) {
 
   names(grl) <- symbols[match(symbols$ENTREZID, names(grl), nomatch = 0), "SYMBOL"]
 
-  # return(grl)
   grl <- GenomicRanges::GRangesList(grl, compress = TRUE)
 
+  # override angle for plotting gene labels
   update_geom_defaults("text", list(angle = 30, hjust = 0))
 
+  # plot genes
   suppressMessages(plot_res <- ggbio::autoplot(grl, aes(type = model)) +
     theme_light(base_size = 16) +
     scale_y_discrete(expand = expansion(mult = c(0.15, 0.25))))
 
+  # return ggplot object with results
   suppressMessages(plot_res@ggplot +
     theme_light(base_size = 16))
 }

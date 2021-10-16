@@ -20,7 +20,7 @@
 #' \dontrun{
 #' ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
 #' }
-
+#'
 ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, genome_build = "GRCh37", population = "ALL", metric = "rsquare") {
 
   # Check function arguments
@@ -28,8 +28,8 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, genome_build
   checkmate::assert_numeric(pos)
   checkmate::assert_numeric(start)
   checkmate::assert_numeric(stop)
-  checkmate::assert_true(stringr::str_detect(ref, stringr::regex("A|C|G|T", ignore_case = TRUE)),.var.name = "ref must contain A/C/G/T")
-  checkmate::assert_true(stringr::str_detect(alt, stringr::regex("A|C|G|T", ignore_case = TRUE)),.var.name = "alt must contain A/C/G/T")
+  checkmate::assert_true(stringr::str_detect(ref, stringr::regex("A|C|G|T", ignore_case = TRUE)), .var.name = "ref must contain A/C/G/T")
+  checkmate::assert_true(stringr::str_detect(alt, stringr::regex("A|C|G|T", ignore_case = TRUE)), .var.name = "alt must contain A/C/G/T")
   checkmate::assert_choice(genome_build, choices = c("GRCh37", "GRCh38"))
   checkmate::assert_choice(population, choices = c("ALL", "AMR", "AFR", "EAS", "EUR", "SAS"))
   checkmate::assert_choice(metric, choices = c("r", "rsquare", "cov"))
@@ -76,8 +76,14 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, genome_build
     .json_res_parsed <- .json_res %>% httr::content(as = "parsed", type = "application/json")
 
     # Convert to tibble
-    .json_res_parsed_df <- suppressMessages(.json_res_parsed$data %>% tibble::as_tibble() %>% tidyr::unnest(cols = everything()))
+    .json_res_parsed_df <- .json_res_parsed$data %>%
+      tibble::as_tibble() %>%
+      tidyr::unnest(cols = everything())
   }
 
-  return(suppressMessages(.json_res_parsed_df %>% readr::type_convert()))
+  if (dim(.json_res_parsed_df)[1] == 0) { # If tibble still empty, reference variant is missing from LD panel
+    cli::cli_abort("Reference variant is missing from the specified LD panel")
+  } else {
+    return(suppressMessages(.json_res_parsed_df %>% readr::type_convert()))
+  }
 }

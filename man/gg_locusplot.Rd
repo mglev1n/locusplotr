@@ -6,7 +6,7 @@
 \usage{
 gg_locusplot(
   df,
-  lead_snp,
+  lead_snp = NULL,
   rsid = rsid,
   chrom = chrom,
   pos = pos,
@@ -27,7 +27,7 @@ gg_locusplot(
 \arguments{
 \item{df}{Dataframe containing columns with rsid, chromosome, position, reference/effect allele, alternate/non-effect allele, and p-value for all variants within the range of interest}
 
-\item{lead_snp}{A character vector containing the lead variant of interest}
+\item{lead_snp}{A character vector containing a lead variant of interest. When NULL (default), the variant with the lowest p-value will be selected as the lead variant.}
 
 \item{rsid}{Rsid column}
 
@@ -43,7 +43,7 @@ gg_locusplot(
 
 \item{plot_pvalue_threshold}{Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance}
 
-\item{plot_subsample_prop}{Proportion of points above p-value threshold to plot (default = 0.1) - reducing the number of points decreases file size and improves performance}
+\item{plot_subsample_prop}{Proportion of points above p-value threshold to plot (default = 0.1; range = 0-1) - reducing the number of points decreases file size and improves performance}
 
 \item{plot_distance}{Integer corresponding to the size of the locus that should be plotted}
 
