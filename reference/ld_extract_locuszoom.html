@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ld_extract_locuszoom — ld_extract_locuszoom • locusplotr</title>
+<title>Fetch linkage disequilibrium statistics for a locus of interest — ld_extract_locuszoom • locusplotr</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="ld_extract_locuszoom — ld_extract_locuszoom" />
+<meta property="og:title" content="Fetch linkage disequilibrium statistics for a locus of interest — ld_extract_locuszoom" />
 <meta property="og:description" content="This function allows the user to extract linkage disequilibrium statistics between a variant of interest and surrounding variants within a contiguous genomic region. This function uses the University of Michigan LocusZoom API (https://portaldev.sph.umich.edu/) to obtain LD information, and allows the user to specify genome-build and ancestry of interest." />
-<meta property="og:image" content="https://mglev1n.github.io/locusplotr/logo.png" />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -116,7 +116,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>ld_extract_locuszoom</h1>
+    <h1>Fetch linkage disequilibrium statistics for a locus of interest</h1>
     <small class="dont-index">Source: <a href='https://github.com/mglev1n/locusplotr/blob/master/R/ld_extract_locuszoom.R'><code>R/ld_extract_locuszoom.R</code></a></small>
     <div class="hidden name"><code>ld_extract_locuszoom.Rd</code></div>
     </div>
@@ -186,6 +186,7 @@
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='fu'>ld_extract_locuszoom</span><span class='op'>(</span>chrom <span class='op'>=</span> <span class='fl'>16</span>, pos <span class='op'>=</span> <span class='fl'>53830055</span>, ref <span class='op'>=</span> <span class='st'>"C"</span>, alt <span class='op'>=</span> <span class='st'>"G"</span>, start <span class='op'>=</span> <span class='fl'>53830055</span> <span class='op'>-</span> <span class='fl'>5e5</span>, stop <span class='op'>=</span> <span class='fl'>53830055</span> <span class='op'>+</span> <span class='fl'>5e5</span>, build <span class='op'>=</span> <span class='st'>"GRCh37"</span>, population <span class='op'>=</span> <span class='st'>"ALL"</span>, metric <span class='op'>=</span> <span class='st'>"rsquare"</span><span class='op'>)</span>
 <span class='op'>}</span>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
