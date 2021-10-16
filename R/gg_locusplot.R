@@ -161,6 +161,7 @@ gg_locusplot <- function(df, lead_snp, rsid = rsid, chrom = chrom, pos = pos, re
     scale_shape_manual(values = c(21, 23), guide = "none") +
     scale_alpha_manual(values = c(0.8, 1), guide = "none") +
     scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1 / 1e6)) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
     guides(fill = guide_legend(override.aes = list(shape = 22, size = 6))) +
     # facet_grid(trait ~ lead_rsid, scales = "free") +
     labs(
