@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/index.html</loc>
+  </url>
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/reference/fto_locus_df.html</loc>
+  </url>
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/reference/gg_gene_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/reference/gg_locusplot.html</loc>
+  </url>
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/reference/ld_extract_locuszoom.html</loc>
+  </url>
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/reference/locusplotr-package.html</loc>
+  </url>
+  <url>
+    <loc>https://mglev1n.github.io/locusplotr/reference/pipe.html</loc>
+  </url>
+</urlset>
