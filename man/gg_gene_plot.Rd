@@ -4,7 +4,7 @@
 \alias{gg_gene_plot}
 \title{gg_gene_plot}
 \usage{
-gg_gene_plot(chr, start, end, build)
+gg_gene_plot(chr, start, end, genome_build)
 }
 \arguments{
 \item{chr}{Integer - chromosome}
@@ -13,10 +13,10 @@ gg_gene_plot(chr, start, end, build)
 
 \item{end}{Integer - ending position for region of interest}
 
-\item{build}{Character - one of "GRCh37" or "GRCh38"}
+\item{genome_build}{Character - genome build - one of "GRCh37" or "GRCh38"}
 }
 \value{
-
+A ggplot object containing a plot of genes within the region of interest
 }
 \description{
 Returns a ggplot containing the genes within a specified genomic region. The function uses database connections to EnsDb.Hsapiens.v75 (hg19/GRCh37) or EnsDb.Hsapiens.v86 (hg38/GRCh38) to identify genes within the specified region, and uses the ggbio package to create the plot.

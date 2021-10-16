@@ -5,9 +5,9 @@
 #' @param chr Integer - chromosome
 #' @param start Integer - starting position for region of interest
 #' @param end Integer - ending position for region of interest
-#' @param build Character - one of "GRCh37" or "GRCh38"
+#' @param genome_build Character - genome build - one of "GRCh37" or "GRCh38"
 #'
-#' @return
+#' @return A ggplot object containing a plot of genes within the region of interest
 #' @export
 #'
 #' @examples
@@ -15,11 +15,17 @@
 #' gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
 #' }
 
-gg_gene_plot <- function(chr, start, end, build) {
-  if (build == "GRCh37") {
+gg_gene_plot <- function(chr, start, end, genome_build) {
+
+  checkmate::assert_numeric(chr)
+  checkmate::assert_numeric(start)
+  checkmate::assert_numeric(end)
+  checkmate::assert_choice(genome_build, choices = c("GRCh37", "GRCh38"))
+
+  if (genome_build == "GRCh37") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg19
-  } else if (build == "GRCh38") {
+  } else if (genome_build == "GRCh38") {
     txb <- AnnotationDbi::loadDb(system.file("extdata", "txb_hg19.sqlite", package = "locusplotr"))
     # txb <- txb_hg38
   } else {
@@ -37,12 +43,12 @@ gg_gene_plot <- function(chr, start, end, build) {
   # return(grl)
   grl <- GenomicRanges::GRangesList(grl, compress = TRUE)
 
-  ggplot2::update_geom_defaults("text", list(angle = 30, hjust = 0))
+  update_geom_defaults("text", list(angle = 30, hjust = 0))
 
-  suppressMessages(plot_res <- ggbio::autoplot(grl, ggplot2::aes(type = model)) +
-    ggplot2::theme_light(base_size = 16) +
-    ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult = c(0.15, 0.25))))
+  suppressMessages(plot_res <- ggbio::autoplot(grl, aes(type = model)) +
+    theme_light(base_size = 16) +
+    scale_y_discrete(expand = expansion(mult = c(0.15, 0.25))))
 
   suppressMessages(plot_res@ggplot +
-    ggplot2::theme_light(base_size = 16))
+    theme_light(base_size = 16))
 }

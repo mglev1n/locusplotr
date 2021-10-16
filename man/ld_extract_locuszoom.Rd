@@ -11,7 +11,7 @@ ld_extract_locuszoom(
   alt,
   start,
   stop,
-  build = "GRCh37",
+  genome_build = "GRCh37",
   population = "ALL",
   metric = "rsquare"
 )
@@ -29,9 +29,9 @@ ld_extract_locuszoom(
 
 \item{stop}{Integer - ending position of range of interest}
 
-\item{build}{Character - one of "GRCh37" or "GRCh38"}
+\item{genome_build}{Character - Genome build - one of "GRCh37" or "GRCh38"}
 
-\item{population}{Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS"}
+\item{population}{Character - 1000G genetic superpopulation - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS"}
 
 \item{metric}{Character - one of "r", "rsquare", or "cov", referring to the correlation statistic of interest}
 }

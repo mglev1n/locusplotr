@@ -8,8 +8,8 @@ gg_locusplot(
   df,
   lead_snp,
   rsid = rsid,
-  chromosome = chromosome,
-  position = position,
+  chrom = chrom,
+  pos = pos,
   ref = ref,
   alt = alt,
   p_value = p_value,
@@ -31,9 +31,9 @@ gg_locusplot(
 
 \item{rsid}{Rsid column}
 
-\item{chromosome}{Chromosome column}
+\item{chrom}{Chromosome column}
 
-\item{position}{Position column}
+\item{pos}{Position column}
 
 \item{ref}{Reference/effect allele column}
 
@@ -60,7 +60,7 @@ gg_locusplot(
 \item{path}{Character string (default = NULL) - if a path is supplied a .pdf of the plot will be saved}
 }
 \value{
-A ggplot object
+A ggplot object containing a regional association plot for the locus of interest
 }
 \description{
 Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
@@ -68,6 +68,10 @@ This function allows the user to integrate genome wide association study (GWAS) 
 }
 \examples{
 \dontrun{
-gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chromosome = chromosome, position = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
+# Basic regional association plot
+gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value)
+
+# Use "plot_genes = TRUE" to add a plot of genes within the region beneath the regional association plot
+gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
 }
 }

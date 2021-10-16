@@ -60,7 +60,7 @@ fto_locus_df
 Use the `gg_locusplot` function to create a regional association plot.
 This calls the `ld_extract_locuszoom` function in the background to
 fetch linkage disequilibrium data from the University of Michigan
-LocusZoom API <https://portaldev.sph.umich.edu/>.
+LocusZoom API (<https://portaldev.sph.umich.edu/>).
 
 ``` r
 library(tidyverse)
@@ -69,8 +69,8 @@ fto_locus_df %>%
   gg_locusplot(
     lead_snp = "rs62033413",
     rsid = rsid,
-    chromosome = chromosome,
-    position = position,
+    chrom = chromosome,
+    pos = position,
     ref = effect_allele,
     alt = other_allele,
     p_value = p_value
@@ -87,8 +87,8 @@ gg_locusplot(
   df = fto_locus_df,
   lead_snp = "rs62033413",
   rsid = rsid,
-  chromosome = chromosome,
-  position = position,
+  chrom = chromosome,
+  pos = position,
   ref = effect_allele,
   alt = other_allele,
   p_value = p_value,
@@ -110,7 +110,7 @@ specify genome build, population, and the specific linkage
 disequilibrium metric (Eg. r, rsquare, cov)
 
 ``` r
-ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
+ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, genome_build = "GRCh37", population = "ALL", metric = "rsquare")
 #> # A tibble: 28,455 × 7
 #>    variant1        chromosome1 position1 variant2 chromosome2 position2 correlation
 #>    <chr>                 <dbl>     <int> <chr>          <dbl>     <int>       <dbl>

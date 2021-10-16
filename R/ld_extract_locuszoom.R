@@ -9,8 +9,8 @@
 #' @param alt Character - alternate allele (or non-effect allele) for reference variant
 #' @param start Integer - starting position of range of interest
 #' @param stop Integer - ending position of range of interest
-#' @param build Character - one of "GRCh37" or "GRCh38"
-#' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS"
+#' @param genome_build Character - Genome build - one of "GRCh37" or "GRCh38"
+#' @param population Character - 1000G genetic superpopulation - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS"
 #' @param metric Character - one of "r", "rsquare", or "cov", referring to the correlation statistic of interest
 #'
 #' @return A tibble containing each variant within the supplied range surrounding the variant of interest, with the requested linkage disequilibrium information with respect to the variant of interest
@@ -21,16 +21,27 @@
 #' ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
 #' }
 
-ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRCh37", population = "ALL", metric = "rsquare") {
+ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, genome_build = "GRCh37", population = "ALL", metric = "rsquare") {
+
+  # Check function arguments
+  checkmate::assert_numeric(chrom)
+  checkmate::assert_numeric(pos)
+  checkmate::assert_numeric(start)
+  checkmate::assert_numeric(stop)
+  checkmate::assert_true(stringr::str_detect(ref, stringr::regex("A|C|G|T", ignore_case = TRUE)),.var.name = "ref must contain A/C/G/T")
+  checkmate::assert_true(stringr::str_detect(alt, stringr::regex("A|C|G|T", ignore_case = TRUE)),.var.name = "alt must contain A/C/G/T")
+  checkmate::assert_choice(genome_build, choices = c("GRCh37", "GRCh38"))
+  checkmate::assert_choice(population, choices = c("ALL", "AMR", "AFR", "EAS", "EUR", "SAS"))
+  checkmate::assert_choice(metric, choices = c("r", "rsquare", "cov"))
 
   # Message
-  cli::cli_alert_info("Extracting LD for {chrom}:{pos}_{str_to_upper(ref)}/{str_to_upper(alt)} for the region {chrom}:{start}-{stop}")
+  cli::cli_alert_info("Extracting LD for {chrom}:{pos}_{stringr::str_to_upper(ref)}/{stringr::str_to_upper(alt)} for the region {chrom}:{start}-{stop}")
   # Format and run initial query
   .json_res <- httr::GET(
-    url = glue::glue("https://portaldev.sph.umich.edu/ld/genome_builds/{build}/references/1000G/populations/{population}/variants"),
+    url = glue::glue("https://portaldev.sph.umich.edu/ld/genome_builds/{genome_build}/references/1000G/populations/{population}/variants"),
     query = list(
       correlation = metric,
-      variant = glue::glue("{chrom}:{pos}_{str_to_upper(ref)}/{str_to_upper(alt)}"),
+      variant = glue::glue("{chrom}:{pos}_{stringr::str_to_upper(ref)}/{stringr::str_to_upper(alt)}"),
       chrom = chrom,
       start = start,
       stop = stop
@@ -42,8 +53,8 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRC
 
   # Convert to tibble
   .json_res_parsed_df <- .json_res_parsed$data %>%
-    as_tibble() %>%
-    unnest(cols = everything())
+    tibble::as_tibble() %>%
+    tidyr::unnest(cols = everything())
 
   # If tibble is empty, reverse ref/alt
   if (dim(.json_res_parsed_df)[1] == 0) {
@@ -51,10 +62,10 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRC
     cli::cli_alert_info("Initial query failed - trying again with flipped Ref/Alt")
     # Format and run initial query
     .json_res <- httr::GET(
-      url = glue::glue("https://portaldev.sph.umich.edu/ld/genome_builds/{build}/references/1000G/populations/{population}/variants"),
+      url = glue::glue("https://portaldev.sph.umich.edu/ld/genome_builds/{genome_build}/references/1000G/populations/{population}/variants"),
       query = list(
         correlation = metric,
-        variant = glue::glue("{chrom}:{pos}_{str_to_upper(alt)}/{str_to_upper(ref)}"),
+        variant = glue::glue("{chrom}:{pos}_{stringr::str_to_upper(alt)}/{stringr::str_to_upper(ref)}"),
         chrom = chrom,
         start = start,
         stop = stop
@@ -65,7 +76,7 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, build = "GRC
     .json_res_parsed <- .json_res %>% httr::content(as = "parsed", type = "application/json")
 
     # Convert to tibble
-    .json_res_parsed_df <- suppressMessages(.json_res_parsed$data %>% as_tibble() %>% unnest(cols = everything()))
+    .json_res_parsed_df <- suppressMessages(.json_res_parsed$data %>% tibble::as_tibble() %>% tidyr::unnest(cols = everything()))
   }
 
   return(suppressMessages(.json_res_parsed_df %>% readr::type_convert()))

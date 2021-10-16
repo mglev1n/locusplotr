@@ -1,6 +1,6 @@
 #' @keywords internal
 "_PACKAGE"
-#' @importFrom dplyr select filter mutate left_join right_join between
+#' @import dplyr ggplot2
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start

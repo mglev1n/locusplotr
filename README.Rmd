@@ -38,7 +38,7 @@ library(locusplotr)
 
 fto_locus_df
 ```
-Use the `gg_locusplot` function to create a regional association plot. This calls the `ld_extract_locuszoom` function in the background to fetch linkage disequilibrium data from the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/>.
+Use the `gg_locusplot` function to create a regional association plot. This calls the `ld_extract_locuszoom` function in the background to fetch linkage disequilibrium data from the University of Michigan LocusZoom API (<https://portaldev.sph.umich.edu/>).
 
 ```{r message=FALSE, warning=FALSE, dpi = 300, out.width = '80%', fig.align="center"}
 library(tidyverse)
@@ -47,8 +47,8 @@ fto_locus_df %>%
   gg_locusplot(
     lead_snp = "rs62033413",
     rsid = rsid,
-    chromosome = chromosome,
-    position = position,
+    chrom = chromosome,
+    pos = position,
     ref = effect_allele,
     alt = other_allele,
     p_value = p_value
@@ -61,8 +61,8 @@ gg_locusplot(
   df = fto_locus_df,
   lead_snp = "rs62033413",
   rsid = rsid,
-  chromosome = chromosome,
-  position = position,
+  chrom = chromosome,
+  pos = position,
   ref = effect_allele,
   alt = other_allele,
   p_value = p_value,
@@ -70,11 +70,11 @@ gg_locusplot(
 )
 ```
 Additional arguments allow the user to specify the genome build (GRCh37, GRCH38), population (Eg. ALL, AMR, AFR, EUR, EAS, etc.), plot title/subtitle, and directory to save the regional association plot as a .pdf.  
-<br>
+<br><br>
 
 The `ld_extract_locuszoom` function, called in the background by `gg_locusplot`, can also be used to retrieve linkage disequilibrium data for a genetic variant and genomic region of interest. The user may again specify genome build, population, and the specific linkage disequilibrium metric (Eg. r, rsquare, cov)
 
 ```{r message=FALSE, warning=FALSE}
-ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
+ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, genome_build = "GRCh37", population = "ALL", metric = "rsquare")
 ```
 
