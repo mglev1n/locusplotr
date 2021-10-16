@@ -1,5 +1,5 @@
 # Function to plot regional association with LD
-#' gg_locusplot
+#' Create a regional association plot
 #'
 #' Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
 #' This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API <https://portaldev.sph.umich.edu/>) for that locus to create a regional association plot.
@@ -187,8 +187,8 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
   # Add plot of genes if reuested by user
   if (plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
-    gene_plot <- callr::r(function(chr, start, end, genome_build) {
-      locusplotr::gg_gene_plot(chr, start, end, genome_build) # nocov
+    geneplot <- callr::r(function(chr, start, end, genome_build) {
+      locusplotr::gg_geneplot(chr, start, end, genome_build) # nocov
     }, args = list(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build)) +
       labs(x = glue::glue("Position on Chromosome {indep_snps$lead_chromosome} (Mb)")) +
       # scale_fill_brewer(palette = "Set3", guide = "none") +
@@ -205,7 +205,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
           axis.title.x = element_blank(),
           plot.margin = margin(5.5, 5.5, 0, 5.5)
         ),
-      gene_plot
+      geneplot
     ), nrow = 2, heights = c(2, 1))))
   }
 

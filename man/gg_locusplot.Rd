@@ -2,7 +2,7 @@
 % Please edit documentation in R/gg_locusplot.R
 \name{gg_locusplot}
 \alias{gg_locusplot}
-\title{gg_locusplot}
+\title{Create a regional association plot}
 \usage{
 gg_locusplot(
   df,
@@ -74,4 +74,5 @@ gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = ch
 # Use "plot_genes = TRUE" to add a plot of genes within the region beneath the regional association plot
 gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
 }
+
 }

@@ -1,4 +1,4 @@
-#' gg_gene_plot
+#' Plot genes located within a genomic region of interest
 #'
 #' Returns a ggplot containing the genes within a specified genomic region. The function uses database connections to EnsDb.Hsapiens.v75 (hg19/GRCh37) or EnsDb.Hsapiens.v86 (hg38/GRCh38) to identify genes within the specified region, and uses the ggbio package to create the plot.
 #'
@@ -12,10 +12,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' gg_gene_plot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
+#' gg_geneplot(1, 170054349 - 1e6, 170054349 + 1e6, "GRCh37")
 #' }
 #'
-gg_gene_plot <- function(chr, start, end, genome_build) {
+gg_geneplot <- function(chr, start, end, genome_build) {
 
   # ensure function arguments are of the correct type
   checkmate::assert_numeric(chr)

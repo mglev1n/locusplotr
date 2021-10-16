@@ -1,2 +1,10 @@
-url: https://mglev1n.github.io/locusplotr
+reference:
+- title: Functions
+  contents:
+  - ld_extract_locuszoom
+  - gg_locusplot
+  - gg_geneplot
 
+- title: Sample Data
+  contents:
+  - fto_locus_df

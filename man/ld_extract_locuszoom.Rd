@@ -2,7 +2,7 @@
 % Please edit documentation in R/ld_extract_locuszoom.R
 \name{ld_extract_locuszoom}
 \alias{ld_extract_locuszoom}
-\title{ld_extract_locuszoom}
+\title{Fetch linkage disequilibrium statistics for a locus of interest}
 \usage{
 ld_extract_locuszoom(
   chrom,
@@ -45,4 +45,5 @@ This function allows the user to extract linkage disequilibrium statistics betwe
 \dontrun{
 ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, build = "GRCh37", population = "ALL", metric = "rsquare")
 }
+
 }

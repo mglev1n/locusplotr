@@ -14,6 +14,7 @@ Description: This package allows the user to obtain linkage disequlibrium data f
 Useful links:
 \itemize{
   \item \url{https://mglev1n.github.io/locusplotr}
+  \item \url{https://github.com/mglev1n/locusplotr}
 }
 
 }
