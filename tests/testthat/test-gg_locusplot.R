@@ -24,6 +24,12 @@ test_that("gg_locusplot with missing LD returns error and ggplot object", {
   expect_s3_class(locusplot_res, "ggplot")
 })
 
+test_that("gg_locusplot with missing lead SNP returns error and ggplot object", {
+  expect_message(gg_locusplot(df = fto_locus_df, lead_snp = "missing_snp", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL), regexp = "Lead snp not present in supplied locus data")
+  locusplot_res <- gg_locusplot(df = fto_locus_df, lead_snp = "missing_snp", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
+  expect_s3_class(locusplot_res, "ggplot")
+})
+
 test_that("gg_locusplot saves to file", {
   .dir <- tempdir()
   expect_equal(file.size(paste0(.dir, "/rs62033413.pdf")), NA_real_) # ensure no plot file exists at baseline

@@ -57,6 +57,14 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt)
 
     cli::cli_alert_info("No lead_snp supplied. Defaulting to {indep_snps$lead_rsid} - {indep_snps$lead_chromosome}:{indep_snps$lead_position}, which has the lowest p-value in the region")
+  } else if (!(lead_snp %in% df$rsid)) {
+    # ensure lead_snp is in the supplied data; if not, use minimum p-value at locus
+    indep_snps <- df %>%
+      slice_min(p_value, with_ties = FALSE, n = 1) %>%
+      select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt)
+
+    cli::cli_alert_info("Lead snp not present in supplied locus data. Defaulting to {indep_snps$lead_rsid} - {indep_snps$lead_chromosome}:{indep_snps$lead_position}, which has the lowest p-value in the region")
+
   } else {
     # Ensure lead_snp supplied by user is a string
     # checkmate::assert_string(lead_snp)
