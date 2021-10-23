@@ -48,7 +48,9 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
   df <- df %>%
     select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
     mutate_if(is.factor, as.character) %>%
-    mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt))
+    mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
+    arrange(p_value) %>%
+    distinct(rsid, .keep_all = TRUE)
 
   # Create df containing information about lead SNP (by default, select SNP with lowest p-value, otherwise take user-supplied value)
   if (is.null(lead_snp)) {
@@ -106,8 +108,8 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
     # Create color codes and labels
     locus_snps_ld <- locus_snps_ld %>%
-      mutate(color_code = as.character(cut(correlation, breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), labels = c("blue4", "skyblue", "darkgreen", "orange", "red"), include.lowest = TRUE))) %>%
-      mutate(legend_label = as.character(cut(correlation, breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), labels = c("0 - 0.2", "0.2 - 0.4", "0.4 - 0.6", "0.6 - 0.8", "0.8 - 1"), include.lowest = TRUE))) %>%
+      mutate(color_code = as.character(cut(as.numeric(correlation), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), labels = c("blue4", "skyblue", "darkgreen", "orange", "red"), include.lowest = TRUE))) %>%
+      mutate(legend_label = as.character(cut(as.numeric(correlation), breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), labels = c("0 - 0.2", "0.2 - 0.4", "0.4 - 0.6", "0.6 - 0.8", "0.8 - 1"), include.lowest = TRUE))) %>%
       mutate(lead = rsid == lead_rsid) %>%
       mutate(label = case_when(
         rsid == lead_rsid ~ lead_rsid,

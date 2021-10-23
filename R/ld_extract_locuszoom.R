@@ -83,7 +83,10 @@ ld_extract_locuszoom <- function(chrom, pos, ref, alt, start, stop, genome_build
 
   if (dim(.json_res_parsed_df)[1] == 0) { # If tibble still empty, reference variant is missing from LD panel
     cli::cli_abort("Reference variant is missing from the specified LD panel")
-  } else {
+  } else if (dim(tidyr::drop_na(.json_res_parsed_df))[1] == 0) {
+    cli::cli_abort("No correlations from the specified LD panel are available within this region")
+    }
+    else {
     return(suppressMessages(.json_res_parsed_df %>% readr::type_convert()))
   }
 }
