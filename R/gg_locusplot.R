@@ -147,6 +147,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
   # Make plot (sample non-significant p-values to reduce overplotting)
   suppressMessages(regional_assoc_plot <- locus_snps_ld %>%
+                     distinct(rsid, .keep_all = TRUE) %>%
     filter(p_value < plot_pvalue_threshold | correlation > 0.2 | legend_label == "Reference") %>% # improve overplotting
     bind_rows(locus_snps_ld %>%
       filter(p_value >= plot_pvalue_threshold & correlation < 0.2 & legend_label != "Reference") %>%
