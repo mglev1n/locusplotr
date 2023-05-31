@@ -13,6 +13,7 @@ gg_locusplot(
   ref = ref,
   alt = alt,
   p_value = p_value,
+  trait = NULL,
   plot_pvalue_threshold = 0.1,
   plot_subsample_prop = 0.1,
   plot_distance = 5e+05,
@@ -40,6 +41,8 @@ gg_locusplot(
 \item{alt}{Alternate/non-effect allele column}
 
 \item{p_value}{P-value column}
+
+\item{trait}{(optional) Column containing the name of the trait}
 
 \item{plot_pvalue_threshold}{Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance}
 
