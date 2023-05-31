@@ -38,7 +38,8 @@ Imports:
     forcats,
     magrittr,
     checkmate,
-    ggtext
+    ggtext,
+    rlang
 Depends: 
     R (>= 2.10)
 Suggests: 

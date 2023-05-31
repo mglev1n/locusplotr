@@ -44,22 +44,27 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
   checkmate::assert_numeric(plot_distance, lower = 0)
   checkmate::assert_logical(plot_genes)
 
-  if (is.null(trait)) {
+  # trait <- rlang::enquo(trait)
+
+  if (rlang::quo_is_null(rlang::enquo(trait))) {
     df <- df %>%
       select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
       mutate_if(is.factor, as.character) %>%
       mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
-      arrange(p_value) %>%
-      distinct(rsid, .keep_all = TRUE)
+      group_by(rsid) %>%
+      slice_min(p_value) %>%
+      ungroup() %>%
+      tidyr::drop_na()
   } else {
     df <- df %>%
       select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}, trait = {{ trait }}) %>%
       mutate_if(is.factor, as.character) %>%
       mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
       arrange(p_value) %>%
-      group_by(trait) %>%
-      distinct(rsid, .keep_all = TRUE) %>%
-      ungroup()
+      group_by(trait, rsid) %>%
+      slice_min(p_value) %>%
+      ungroup() %>%
+      tidyr::drop_na()
   }
 
 
@@ -155,11 +160,14 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       ))
   }
 
+  # group locus by trait if necessary
+  if (!rlang::quo_is_null(rlang::enquo(trait))) {
+    locus_snps_ld <- locus_snps_ld %>%
+      group_by(.data = ., trait)
+    }
+
   # Make plot (sample non-significant p-values to reduce overplotting)
   suppressMessages(regional_assoc_plot <- locus_snps_ld %>%
-                     {
-                       if (!is.null(trait)) group_by(.data = ., trait) else .
-                     } %>%
                      distinct(rsid, .keep_all = TRUE) %>%
                      filter(p_value < plot_pvalue_threshold | correlation > 0.2 | legend_label == "Ref") %>% # improve overplotting
                      bind_rows(locus_snps_ld %>%
@@ -209,6 +217,11 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                        axis.title.y = ggtext::element_markdown(),
                        legend.spacing.y = unit(0, "pt")
                      ))
+
+  if (!rlang::quo_is_null(enquo(trait))) {
+    regional_assoc_plot <- regional_assoc_plot +
+      facet_grid(rows = vars(trait))
+  }
 
   # Add plot of genes if reuested by user
   if (plot_genes) {
