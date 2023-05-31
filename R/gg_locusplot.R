@@ -220,7 +220,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
   if (!rlang::quo_is_null(enquo(trait))) {
     regional_assoc_plot <- regional_assoc_plot +
-      facet_grid(rows = vars(trait))
+      facet_grid(rows = vars(trait), scales = "free_y")
   }
 
   # Add plot of genes if reuested by user
