@@ -104,7 +104,8 @@
 <span><span class="co">#&gt;  8         16 53494581 rs5350… A             G            0.997   0.264   0.170 </span></span>
 <span><span class="co">#&gt;  9         16 54248221 rs5576… A             T            0.0476 -0.0527  0.0709</span></span>
 <span><span class="co">#&gt; 10         16 53549981 &lt;NA&gt;    A             G            0.0004  1.50    0.518 </span></span>
-<span><span class="co">#&gt; # … with 19,109 more rows, and 1 more variable: p_value &lt;dbl&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; # ℹ 19,109 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 1 more variable: p_value &lt;dbl&gt;</span></span></code></pre></div>
 <p>Use the <code>gg_locusplot</code> function to create a regional association plot. This calls the <code>ld_extract_locuszoom</code> function in the background to fetch linkage disequilibrium data from the University of Michigan LocusZoom API (<a href="https://portaldev.sph.umich.edu/" class="external-link uri">https://portaldev.sph.umich.edu/</a>).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
@@ -138,19 +139,19 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ld_extract_locuszoom.html">ld_extract_locuszoom</a></span><span class="op">(</span>chrom <span class="op">=</span> <span class="fl">16</span>, pos <span class="op">=</span> <span class="fl">53830055</span>, ref <span class="op">=</span> <span class="st">"C"</span>, alt <span class="op">=</span> <span class="st">"G"</span>, start <span class="op">=</span> <span class="fl">53830055</span> <span class="op">-</span> <span class="fl">5e5</span>, stop <span class="op">=</span> <span class="fl">53830055</span> <span class="op">+</span> <span class="fl">5e5</span>, genome_build <span class="op">=</span> <span class="st">"GRCh37"</span>, population <span class="op">=</span> <span class="st">"ALL"</span>, metric <span class="op">=</span> <span class="st">"rsquare"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 28,455 × 7</span></span>
-<span><span class="co">#&gt;    variant1        chromosome1 position1 variant2 chromosome2 position2 correlation</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;                 &lt;dbl&gt;     &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt;     &lt;int&gt;       &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt;  1 16:53830055_C/G          16  53830055 16:5333…          16  53330083   0.000613 </span></span>
-<span><span class="co">#&gt;  2 16:53830055_C/G          16  53830055 16:5333…          16  53330091   0.00328  </span></span>
-<span><span class="co">#&gt;  3 16:53830055_C/G          16  53830055 16:5333…          16  53330128   0.0000874</span></span>
-<span><span class="co">#&gt;  4 16:53830055_C/G          16  53830055 16:5333…          16  53330136   0.0000592</span></span>
-<span><span class="co">#&gt;  5 16:53830055_C/G          16  53830055 16:5333…          16  53330148   0.00364  </span></span>
-<span><span class="co">#&gt;  6 16:53830055_C/G          16  53830055 16:5333…          16  53330184   0.000674 </span></span>
-<span><span class="co">#&gt;  7 16:53830055_C/G          16  53830055 16:5333…          16  53330263   0.000118 </span></span>
-<span><span class="co">#&gt;  8 16:53830055_C/G          16  53830055 16:5333…          16  53330336   0.0000592</span></span>
-<span><span class="co">#&gt;  9 16:53830055_C/G          16  53830055 16:5333…          16  53330401   0.000618 </span></span>
-<span><span class="co">#&gt; 10 16:53830055_C/G          16  53830055 16:5333…          16  53330445   0.00202  </span></span>
-<span><span class="co">#&gt; # … with 28,445 more rows</span></span></code></pre></div>
+<span><span class="co">#&gt;    variant1     chromosome1 position1 variant2 chromosome2 position2 correlation</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;              &lt;dbl&gt;     &lt;int&gt; &lt;chr&gt;          &lt;dbl&gt;     &lt;int&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 16:53830055…          16  53830055 16:5333…          16  53330083   0.000613 </span></span>
+<span><span class="co">#&gt;  2 16:53830055…          16  53830055 16:5333…          16  53330091   0.00328  </span></span>
+<span><span class="co">#&gt;  3 16:53830055…          16  53830055 16:5333…          16  53330128   0.0000874</span></span>
+<span><span class="co">#&gt;  4 16:53830055…          16  53830055 16:5333…          16  53330136   0.0000592</span></span>
+<span><span class="co">#&gt;  5 16:53830055…          16  53830055 16:5333…          16  53330148   0.00364  </span></span>
+<span><span class="co">#&gt;  6 16:53830055…          16  53830055 16:5333…          16  53330184   0.000674 </span></span>
+<span><span class="co">#&gt;  7 16:53830055…          16  53830055 16:5333…          16  53330263   0.000118 </span></span>
+<span><span class="co">#&gt;  8 16:53830055…          16  53830055 16:5333…          16  53330336   0.0000592</span></span>
+<span><span class="co">#&gt;  9 16:53830055…          16  53830055 16:5333…          16  53330401   0.000618 </span></span>
+<span><span class="co">#&gt; 10 16:53830055…          16  53830055 16:5333…          16  53330445   0.00202  </span></span>
+<span><span class="co">#&gt; # ℹ 28,445 more rows</span></span></code></pre></div>
 </div>
 </div>
   </div>
