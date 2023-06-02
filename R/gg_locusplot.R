@@ -186,7 +186,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                                                alpha = 1,
                                                # nudge_x = -0.05 * max(locus_snps_ld$position),
                                                # nudge_y = 0.25 * -log10(min(locus_snps_ld$p_value))
-                                               nudge_y = 5
+                                               nudge_y = 4
                      ) +
                      geom_hline(yintercept = -log10(5e-8), linetype = "dashed") +
                      scale_fill_identity(parse(text = "r^2"), guide = "legend", labels = levels(forcats::fct_drop(locus_snps_ld$legend_label)), na.translate = FALSE) +
