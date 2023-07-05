@@ -134,11 +134,13 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
         rsid == lead_rsid ~ "purple",
         TRUE ~ color_code
       )) %>%
+      mutate(color_code = forcats::fct_expand(color_code, "purple", "red", "orange", "darkgreen", "skyblue", "blue4")) %>%
       mutate(color_code = forcats::fct_relevel(color_code, "purple", "red", "orange", "darkgreen", "skyblue", "blue4")) %>%
       mutate(legend_label = case_when(
         rsid == lead_rsid ~ "Ref",
         TRUE ~ legend_label
       )) %>%
+      mutate(legend_label = forcats::fct_expand(legend_label, "Ref", "0.8 - 1", "0.6 - 0.8", "0.4 - 0.6", "0.2 - 0.4", "0 - 0.2")) %>%
       mutate(legend_label = forcats::fct_relevel(legend_label, "Ref", "0.8 - 1", "0.6 - 0.8", "0.4 - 0.6", "0.2 - 0.4", "0 - 0.2"))
   } else {
     # Deal with scenario where lead variant is not present in LD database
