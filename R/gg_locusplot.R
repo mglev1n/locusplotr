@@ -48,7 +48,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
   if (rlang::quo_is_null(rlang::enquo(trait))) {
     df <- df %>%
-      select(all_of(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }})) %>%
+      select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
       mutate_if(is.factor, as.character) %>%
       mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
       group_by(rsid) %>%
@@ -57,7 +57,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       tidyr::drop_na()
   } else {
     df <- df %>%
-      select(all_of(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}, trait = {{ trait }})) %>%
+      select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}, trait = {{ trait }}) %>%
       mutate_if(is.factor, as.character) %>%
       mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
       arrange(p_value) %>%
