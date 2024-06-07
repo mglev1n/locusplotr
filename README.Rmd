@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/mglev1n/locusplotr/workflows/R-CMD-check/badge.svg)](https://github.com/mglev1n/locusplotr/actions)
+[![R-CMD-check](https://github.com/mglev1n/locusplotr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mglev1n/locusplotr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `locusplotr` is to allow users to integrate genome-wide association study results with linkage disequilibrium data to create regional association plots surrounding a genomic locus of interest. The `gg_locusplot` function allows the user to provide GWAS summary statistics for a region of interest and a reference/sentinel/lead variant within that region, and will return a ggplot object with a regional association plot. In the background, this package uses a helper function named `ld_extract_locuszoom` to query the University of Michigan LocusZoom API (<https://portaldev.sph.umich.edu/>) to obtain linkage disequilibrium data for a genetic variant and genomic region of interest (allowing the user to specify genome build and genetic ancestry). 
