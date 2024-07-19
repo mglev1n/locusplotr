@@ -8,6 +8,7 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/mglev1n/locusplotr/workflows/R-CMD-check/badge.svg)](https://github.com/mglev1n/locusplotr/actions)
+[![R-CMD-check](https://github.com/mglev1n/locusplotr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mglev1n/locusplotr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `locusplotr` is to allow users to integrate genome-wide

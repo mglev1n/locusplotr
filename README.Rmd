@@ -78,4 +78,3 @@ The `ld_extract_locuszoom` function, called in the background by `gg_locusplot`,
 ```{r message=FALSE, warning=FALSE}
 ld_extract_locuszoom(chrom = 16, pos = 53830055, ref = "C", alt = "G", start = 53830055 - 5e5, stop = 53830055 + 5e5, genome_build = "GRCh37", population = "ALL", metric = "rsquare")
 ```
-

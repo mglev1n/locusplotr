@@ -4,7 +4,7 @@
 \alias{gg_geneplot}
 \title{Plot genes located within a genomic region of interest}
 \usage{
-gg_geneplot(chr, start, end, genome_build)
+gg_geneplot(chr, start, end, genome_build = "GRCh38", max_levels = 5)
 }
 \arguments{
 \item{chr}{Integer - chromosome}
@@ -14,6 +14,8 @@ gg_geneplot(chr, start, end, genome_build)
 \item{end}{Integer - ending position for region of interest}
 
 \item{genome_build}{Character - genome build - one of "GRCh37" or "GRCh38"}
+
+\item{max_levels}{Integer - maximum number of levels for gene tracks}
 }
 \value{
 A ggplot object containing a plot of genes within the region of interest

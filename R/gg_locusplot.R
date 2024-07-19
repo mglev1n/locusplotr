@@ -168,8 +168,10 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       group_by(.data = ., trait)
     }
 
+  locus_snps_ld_label <- locus_snps_ld %>% filter(!is.na(label))
+
   # Make plot (sample non-significant p-values to reduce overplotting)
-  suppressMessages(regional_assoc_plot <- locus_snps_ld %>%
+  regional_assoc_plot <- locus_snps_ld %>%
                      distinct(rsid, .keep_all = TRUE) %>%
                      filter(p_value < plot_pvalue_threshold | correlation > 0.2 | legend_label == "Ref") %>% # improve overplotting
                      bind_rows(locus_snps_ld %>%
@@ -178,7 +180,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                      arrange(desc(color_code)) %>%
                      ggplot(aes(position, -log10(p_value), fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
                      geom_point() +
-                     ggrepel::geom_label_repel(aes(label = label),
+                     ggrepel::geom_label_repel(data = locus_snps_ld_label, aes(label = label),
                                                size = 4,
                                                color = "black",
                                                fontface = "bold",
@@ -186,8 +188,6 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                                                min.segment.length = 0,
                                                box.padding = 1,
                                                alpha = 1,
-                                               # nudge_x = -0.05 * max(locus_snps_ld$position),
-                                               # nudge_y = 0.25 * -log10(min(locus_snps_ld$p_value))
                                                nudge_y = 4
                      ) +
                      geom_hline(yintercept = -log10(5e-8), linetype = "dashed") +
@@ -197,7 +197,8 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                      scale_alpha_manual(values = c(0.8, 1), guide = "none") +
                      scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1 / 1e6)) +
                      scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
-                     guides(fill = guide_legend(override.aes = list(shape = 22, size = 6))) +
+                     guides(fill = guide_legend(override.aes = list(shape = 22, size = 6),
+                                                position = "inside")) +
                      labs(
                        title = plot_title,
                        subtitle = plot_subtitle,
@@ -207,18 +208,15 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                      theme_bw(base_size = 16) +
                      theme(
                        plot.title = element_text(face = "bold"),
-                       legend.title.align = 0.5,
                        legend.text = element_text(size = 10),
-                       legend.title = element_text(size = 10),
-                       # legend.margin = margin(1, 1, 1, 1),
-                       legend.justification = c("right", "top"),
-                       legend.position = c(0.99, 0.99),
-                       # legend.spacing = unit(0, "pt"),
+                       legend.title = element_text(size = 10, hjust = 0.5),
+                       legend.justification.inside = c("right", "top"),
+                       legend.position.inside = c(0.99, 0.99),
                        strip.text = element_text(color = "black"),
                        strip.text.x = element_blank(),
                        axis.title.y = ggtext::element_markdown(),
                        legend.spacing.y = unit(0, "pt")
-                     ))
+                     )
 
   if (!rlang::quo_is_null(enquo(trait))) {
     regional_assoc_plot <- regional_assoc_plot +
@@ -228,13 +226,15 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
   # Add plot of genes if reuested by user
   if (plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
-    geneplot <- callr::r(function(chr, start, end, genome_build) {
-      locusplotr::gg_geneplot(chr, start, end, genome_build) # nocov
-    }, args = list(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build)) +
-      labs(x = glue::glue("Position on Chromosome {indep_snps$lead_chromosome} (Mb)")) +
-      # scale_fill_brewer(palette = "Set3", guide = "none") +
-      scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1 / 1e6), limits = c(indep_snps$lead_position - plot_distance / 2, indep_snps$lead_position + plot_distance / 2)) +
+    geneplot <- gg_geneplot(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build) +
       theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
+    # geneplot <- callr::r(function(chr, start, end, genome_build) {
+    #   locusplotr::gg_geneplot(chr, start, end, genome_build) # nocov
+    # }, args = list(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build)) +
+    #   labs(x = glue::glue("Position on Chromosome {indep_snps$lead_chromosome} (Mb)")) +
+    #   # scale_fill_brewer(palette = "Set3", guide = "none") +
+    #   scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1 / 1e6), limits = c(indep_snps$lead_position - plot_distance / 2, indep_snps$lead_position + plot_distance / 2)) +
+    #   theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
 
     suppressWarnings(suppressMessages(regional_assoc_plot <- patchwork::wrap_plots(list(
       regional_assoc_plot +
@@ -247,7 +247,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
           plot.margin = margin(5.5, 5.5, 0, 5.5)
         ),
       geneplot
-    ), nrow = 2, heights = c(2, 1))))
+    ), nrow = 2, heights = c(3, 1))))
   }
 
   # Return +/- save ggplot object
