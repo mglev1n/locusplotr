@@ -63,7 +63,7 @@ gg_geneplot <- function(chr, start, end, genome_build = "GRCh38", max_levels = 5
     scale_x_continuous(breaks = scales::extended_breaks(n = 5),
                        labels = scales::label_number(scale = 1 / 1e6),
                        limits = c(start, end)) +
-    scale_y_continuous(expand = expansion(mult = c(0.1, 0.2))) +
+    scale_y_continuous(expand = expansion(mult = c(0.2, 0.3))) +
     labs(x = glue::glue("Position on Chromosome {chr} (Mb)"),
          y = "") +
     theme_bw(base_size = 16) +
