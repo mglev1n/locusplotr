@@ -256,13 +256,6 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
     geneplot <- gg_geneplot(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build) +
       theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
-    # geneplot <- callr::r(function(chr, start, end, genome_build) {
-    #   locusplotr::gg_geneplot(chr, start, end, genome_build) # nocov
-    # }, args = list(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build)) +
-    #   labs(x = glue::glue("Position on Chromosome {indep_snps$lead_chromosome} (Mb)")) +
-    #   # scale_fill_brewer(palette = "Set3", guide = "none") +
-    #   scale_x_continuous(breaks = scales::extended_breaks(n = 5), labels = scales::label_number(scale = 1 / 1e6), limits = c(indep_snps$lead_position - plot_distance / 2, indep_snps$lead_position + plot_distance / 2)) +
-    #   theme(plot.margin = margin(0, 5.5, 5.5, 5.5))
 
     suppressWarnings(suppressMessages(regional_assoc_plot <- patchwork::wrap_plots(list(
       regional_assoc_plot +

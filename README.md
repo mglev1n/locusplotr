@@ -99,6 +99,27 @@ gg_locusplot(
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" />
+
+Use the `plot_recombination` argument to include a secondary axis
+containing recombination rates on regional association plot.
+
+``` r
+gg_locusplot(
+  df = fto_locus_df,
+  lead_snp = "rs62033413",
+  rsid = rsid,
+  chrom = chromosome,
+  pos = position,
+  ref = effect_allele,
+  alt = other_allele,
+  p_value = p_value,
+  plot_genes = TRUE,
+  plot_recombination = TRUE
+)
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="80%" style="display: block; margin: auto;" />
+
 Additional arguments allow the user to specify the genome build (GRCh37,
 GRCH38), population (Eg. ALL, AMR, AFR, EUR, EAS, etc.), plot
 title/subtitle, and directory to save the regional association plot as a
