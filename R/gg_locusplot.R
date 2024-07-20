@@ -13,7 +13,7 @@
 #' @param alt Alternate/non-effect allele column
 #' @param p_value P-value column
 #' @param plot_pvalue_threshold Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance
-#' @param plot_subsample_prop Proportion of points above p-value threshold to plot (default = 0.1; range = 0-1) - reducing the number of points decreases file size and improves performance
+#' @param plot_subsample_prop Proportion of points above p-value threshold to plot (default = 0.25; range = 0-1) - reducing the number of points decreases file size and improves performance
 #' @param plot_distance Integer corresponding to the size of the locus that should be plotted
 #' @param genome_build Character - one of "GRCh37" or "GRCh38"
 #' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")
@@ -36,7 +36,7 @@
 #' gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
 #' }
 #'
-gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, trait = NULL, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_recombination = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
+gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, trait = NULL, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.25, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_recombination = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   # Check input arguments to ensure they are of the correct type and within reasonable ranges
   checkmate::assert_data_frame(df)
   # checkmate::assert_string(lead_snp)
@@ -178,7 +178,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                      bind_rows(locus_snps_ld %>%
                                  filter(p_value >= plot_pvalue_threshold & correlation < 0.2 & legend_label != "Ref") %>%
                                  slice_sample(prop = plot_subsample_prop)) %>%
-                     arrange(desc(color_code)) %>%
+                     arrange(desc(color_code), desc(p_value)) %>%
                      ggplot(aes(position, -log10(p_value))) +
                      geom_point(aes(fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
                      ggrepel::geom_label_repel(data = locus_snps_ld_label, aes(label = label),

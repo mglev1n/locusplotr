@@ -15,7 +15,7 @@ gg_locusplot(
   p_value = p_value,
   trait = NULL,
   plot_pvalue_threshold = 0.1,
-  plot_subsample_prop = 0.1,
+  plot_subsample_prop = 0.25,
   plot_distance = 5e+05,
   genome_build = "GRCh37",
   population = "ALL",
@@ -47,7 +47,7 @@ gg_locusplot(
 
 \item{plot_pvalue_threshold}{Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance}
 
-\item{plot_subsample_prop}{Proportion of points above p-value threshold to plot (default = 0.1; range = 0-1) - reducing the number of points decreases file size and improves performance}
+\item{plot_subsample_prop}{Proportion of points above p-value threshold to plot (default = 0.25; range = 0-1) - reducing the number of points decreases file size and improves performance}
 
 \item{plot_distance}{Integer corresponding to the size of the locus that should be plotted}
 
