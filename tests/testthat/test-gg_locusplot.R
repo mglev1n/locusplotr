@@ -13,6 +13,14 @@ test_that("Default gg_locusplot returns a ggplot object", {
   expect_s3_class(locusplot_res, "ggplot")
 })
 
+test_that("Multitrait gg_locusplot returns a ggplot object", {
+  locusplot_res <- gg_locusplot(df = fto_locus_df %>% mutate(trait = "BMI") %>% bind_rows(fto_locus_df %>% mutate(trait = "HbA1c")) %>% unique, rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL, trait = trait)
+  expect_s3_class(locusplot_res, "ggplot")
+  # ggplot object returned when lead_snp = NULL
+  locusplot_res <- gg_locusplot(df = fto_locus_df, lead_snp = NULL, rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
+  expect_s3_class(locusplot_res, "ggplot")
+})
+
 test_that("Default gg_locusplot with plot_genes returns a patchwork object", {
   locusplot_res <- gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE, plot_title = NULL, plot_subtitle = NULL, plot_distance = 1e6, path = NULL)
   expect_s3_class(locusplot_res, "patchwork")
