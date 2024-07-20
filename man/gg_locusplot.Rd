@@ -20,6 +20,7 @@ gg_locusplot(
   genome_build = "GRCh37",
   population = "ALL",
   plot_genes = FALSE,
+  plot_recombination = FALSE,
   plot_title = NULL,
   plot_subtitle = NULL,
   path = NULL
@@ -55,6 +56,8 @@ gg_locusplot(
 \item{population}{Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")}
 
 \item{plot_genes}{Logical - Include a plot of genes/transcripts within the region of interest beneath the regional association plot (default = FALSE)}
+
+\item{plot_recombination}{Logical - Include a secondary y-axis of recombination rate within the region of interest}
 
 \item{plot_title}{A character string corresponding to plot title (default = NULL)}
 
