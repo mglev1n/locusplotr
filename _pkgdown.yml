@@ -5,9 +5,10 @@ template:
 reference:
 - title: Functions
   contents:
-  - ld_extract_locuszoom
   - gg_locusplot
   - gg_geneplot
+  - ld_extract_locuszoom
+  - recomb_extract_locuszoom
 
 - title: Sample Data
   contents:

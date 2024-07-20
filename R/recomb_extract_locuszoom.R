@@ -20,7 +20,7 @@
 #' }
 #'
 #' @export
-recomb_locuszoom <- function(chrom, start, end, genome_build = "GRCh37") {
+recomb_extract_locuszoom <- function(chrom, start, end, genome_build = "GRCh37") {
   checkmate::assert_numeric(chrom)
   checkmate::assert_numeric(start)
   checkmate::assert_numeric(end)
