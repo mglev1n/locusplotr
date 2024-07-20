@@ -119,9 +119,25 @@
 <span>  p_value <span class="op">=</span> <span class="va">p_value</span>,</span>
 <span>  plot_genes <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;"> Additional arguments allow the user to specify the genome build (GRCh37, GRCH38), population (Eg. ALL, AMR, AFR, EUR, EAS, etc.), plot title/subtitle, and directory to save the regional association plot as a .pdf.<br><br><br></p>
-<p>The <code>ld_extract_locuszoom</code> function, called in the background by <code>gg_locusplot</code>, can also be used to retrieve linkage disequilibrium data for a genetic variant and genomic region of interest. The user may again specify genome build, population, and the specific linkage disequilibrium metric (Eg. r, rsquare, cov)</p>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p>Use the <code>plot_recombination</code> argument to include a secondary axis containing recombination rates on regional association plot.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/gg_locusplot.html">gg_locusplot</a></span><span class="op">(</span></span>
+<span>  df <span class="op">=</span> <span class="va">fto_locus_df</span>,</span>
+<span>  lead_snp <span class="op">=</span> <span class="st">"rs62033413"</span>,</span>
+<span>  rsid <span class="op">=</span> <span class="va">rsid</span>,</span>
+<span>  chrom <span class="op">=</span> <span class="va">chromosome</span>,</span>
+<span>  pos <span class="op">=</span> <span class="va">position</span>,</span>
+<span>  ref <span class="op">=</span> <span class="va">effect_allele</span>,</span>
+<span>  alt <span class="op">=</span> <span class="va">other_allele</span>,</span>
+<span>  p_value <span class="op">=</span> <span class="va">p_value</span>,</span>
+<span>  plot_genes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plot_recombination <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="80%" style="display: block; margin: auto;"></p>
+<p>Additional arguments allow the user to specify the genome build (GRCh37, GRCH38), population (Eg. ALL, AMR, AFR, EUR, EAS, etc.), plot title/subtitle, and directory to save the regional association plot as a .pdf.<br><br><br></p>
+<p>The <code>ld_extract_locuszoom</code> function, called in the background by <code>gg_locusplot</code>, can also be used to retrieve linkage disequilibrium data for a genetic variant and genomic region of interest. The user may again specify genome build, population, and the specific linkage disequilibrium metric (Eg. r, rsquare, cov)</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ld_extract_locuszoom.html">ld_extract_locuszoom</a></span><span class="op">(</span>chrom <span class="op">=</span> <span class="fl">16</span>, pos <span class="op">=</span> <span class="fl">53830055</span>, ref <span class="op">=</span> <span class="st">"C"</span>, alt <span class="op">=</span> <span class="st">"G"</span>, start <span class="op">=</span> <span class="fl">53830055</span> <span class="op">-</span> <span class="fl">5e5</span>, stop <span class="op">=</span> <span class="fl">53830055</span> <span class="op">+</span> <span class="fl">5e5</span>, genome_build <span class="op">=</span> <span class="st">"GRCh37"</span>, population <span class="op">=</span> <span class="st">"ALL"</span>, metric <span class="op">=</span> <span class="st">"rsquare"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 28,455 × 7</span></span>
 <span><span class="co">#&gt;    variant1     chromosome1 position1 variant2 chromosome2 position2 correlation</span></span>
