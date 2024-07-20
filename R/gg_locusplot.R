@@ -18,6 +18,7 @@
 #' @param genome_build Character - one of "GRCh37" or "GRCh38"
 #' @param population Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring to the reference population of interest for obtaining linkage disequilibrium information (default = "ALL")
 #' @param plot_genes Logical - Include a plot of genes/transcripts within the region of interest beneath the regional association plot (default = FALSE)
+#' @param plot_recombination Logical - Include a secondary y-axis of recombination rate within the region of interest
 #' @param plot_title A character string corresponding to plot title (default = NULL)
 #' @param plot_subtitle A character string corresponding to plot subtitle (default = NULL)
 #' @param path Character string (default = NULL) - if a path is supplied a .pdf of the plot will be saved
@@ -35,7 +36,7 @@
 #' gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
 #' }
 #'
-gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, trait = NULL, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
+gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, trait = NULL, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.1, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_recombination = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   # Check input arguments to ensure they are of the correct type and within reasonable ranges
   checkmate::assert_data_frame(df)
   # checkmate::assert_string(lead_snp)
@@ -178,8 +179,8 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                                  filter(p_value >= plot_pvalue_threshold & correlation < 0.2 & legend_label != "Ref") %>%
                                  slice_sample(prop = plot_subsample_prop)) %>%
                      arrange(desc(color_code)) %>%
-                     ggplot(aes(position, -log10(p_value), fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
-                     geom_point() +
+                     ggplot(aes(position, -log10(p_value))) +
+                     geom_point(aes(fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
                      ggrepel::geom_label_repel(data = locus_snps_ld_label, aes(label = label),
                                                size = 4,
                                                color = "black",
@@ -223,7 +224,34 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       facet_grid(rows = vars(trait), scales = "free_y")
   }
 
-  # Add plot of genes if reuested by user
+  if (plot_recombination) {
+    cli::cli_alert_info("Extracting recombination rates for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
+    ylim <- max(-log10(pull(locus_snps_ld, p_value)), na.rm = TRUE) +
+      0.3 * max(-log10(pull(locus_snps_ld, p_value)), na.rm = TRUE)
+
+    recomb_df <- recomb_extract_locuszoom(chrom = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build) %>%
+      select(position, recomb_rate)
+    # return(recomb_df)
+    suppressMessages(
+      regional_assoc_plot <- regional_assoc_plot +
+      geom_line(data = recomb_df, mapping = aes(x = position, y = recomb_rate), color = "lightblue", linewidth = 0.5) +
+      scale_y_continuous(
+        name = "-log<sub>10</sub>(P-value)",
+        limits = c(0, ylim),
+        sec.axis = sec_axis(
+          ~. * (100 / ylim),
+          name = "Recombination rate (cM/Mb)"
+          # labels = scales::percent_format()
+        )
+      ) +
+        theme(axis.title.y.right = element_text(vjust = 1.5))
+      )
+
+    regional_assoc_plot <- gginnards::move_layers(regional_assoc_plot, "GeomLine", "bottom")
+
+  }
+
+  # Add plot of genes if requested by user
   if (plot_genes) {
     cli::cli_alert_info("Extracting genes for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
     geneplot <- gg_geneplot(chr = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build) +

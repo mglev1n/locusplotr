@@ -32,7 +32,8 @@ Imports:
     checkmate,
     ggtext,
     rlang,
-    snpsettest
+    snpsettest,
+    gginnards
 Depends: 
     R (>= 2.10)
 Suggests: 
