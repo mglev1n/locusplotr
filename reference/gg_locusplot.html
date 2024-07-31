@@ -9,7 +9,7 @@ This function allows the user to integrate genome wide association study (GWAS) 
 
     <a class="navbar-brand me-2" href="../index.html">locusplotr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,8 @@ This function allows the user to integrate genome wide association study (GWAS) 
 <span>  pos <span class="op">=</span> <span class="va">pos</span>,</span>
 <span>  ref <span class="op">=</span> <span class="va">ref</span>,</span>
 <span>  alt <span class="op">=</span> <span class="va">alt</span>,</span>
+<span>  effect <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  std_err <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_value <span class="op">=</span> <span class="va">p_value</span>,</span>
 <span>  trait <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_pvalue_threshold <span class="op">=</span> <span class="fl">0.1</span>,</span>
@@ -93,6 +95,14 @@ This function allows the user to integrate genome wide association study (GWAS) 
 
 <dt id="arg-alt">alt<a class="anchor" aria-label="anchor" href="#arg-alt"></a></dt>
 <dd><p>Alternate/non-effect allele column</p></dd>
+
+
+<dt id="arg-effect">effect<a class="anchor" aria-label="anchor" href="#arg-effect"></a></dt>
+<dd><p>Effect size column (on beta or log-odds scale)</p></dd>
+
+
+<dt id="arg-std-err">std_err<a class="anchor" aria-label="anchor" href="#arg-std-err"></a></dt>
+<dd><p>Standard error column</p></dd>
 
 
 <dt id="arg-p-value">p_value<a class="anchor" aria-label="anchor" href="#arg-p-value"></a></dt>
