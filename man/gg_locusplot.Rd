@@ -12,6 +12,8 @@ gg_locusplot(
   pos = pos,
   ref = ref,
   alt = alt,
+  effect = NULL,
+  std_err = NULL,
   p_value = p_value,
   trait = NULL,
   plot_pvalue_threshold = 0.1,
@@ -40,6 +42,10 @@ gg_locusplot(
 \item{ref}{Reference/effect allele column}
 
 \item{alt}{Alternate/non-effect allele column}
+
+\item{effect}{Effect size column (on beta or log-odds scale)}
+
+\item{std_err}{Standard error column}
 
 \item{p_value}{P-value column}
 

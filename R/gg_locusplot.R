@@ -11,6 +11,8 @@
 #' @param pos Position column
 #' @param ref Reference/effect allele column
 #' @param alt Alternate/non-effect allele column
+#' @param effect Effect size column (on beta or log-odds scale)
+#' @param std_err Standard error column
 #' @param p_value P-value column
 #' @param plot_pvalue_threshold Threshold for plotting p-value on regional association plot (default = 0.1) - reducing the number of points decreases file size and improves performance
 #' @param plot_subsample_prop Proportion of points above p-value threshold to plot (default = 0.25; range = 0-1) - reducing the number of points decreases file size and improves performance
@@ -36,7 +38,7 @@
 #' gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
 #' }
 #'
-gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, p_value = p_value, trait = NULL, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.25, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_recombination = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
+gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = pos, ref = ref, alt = alt, effect = NULL, std_err = NULL, p_value = p_value, trait = NULL, plot_pvalue_threshold = 0.1, plot_subsample_prop = 0.25, plot_distance = 500000, genome_build = "GRCh37", population = "ALL", plot_genes = FALSE, plot_recombination = FALSE, plot_title = NULL, plot_subtitle = NULL, path = NULL) {
   # Check input arguments to ensure they are of the correct type and within reasonable ranges
   checkmate::assert_data_frame(df)
   # checkmate::assert_string(lead_snp)
@@ -47,23 +49,35 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
   # trait <- rlang::enquo(trait)
 
+  if(!rlang::quo_is_null(rlang::enquo(effect)) & !rlang::quo_is_null(rlang::enquo(std_err))) {
+    checkmate::assert_numeric(df %>% pull({{ effect }}))
+    checkmate::assert_numeric(df %>% pull({{ std_err }}))
+
+    df <- df %>%
+      rename(.effect = {{ effect }},
+             .std_err = {{ std_err }}) %>%
+      mutate(log10_pval = abs((pnorm(-abs(.effect/.std_err), log.p=TRUE) + log(2)) / log(10)))
+  } else {
+    df <- df %>%
+      mutate(log10_pval = -log10({{ p_value }}))
+  }
+
   if (rlang::quo_is_null(rlang::enquo(trait))) {
     df <- df %>%
-      select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}) %>%
+      select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, log10_pval) %>%
       mutate_if(is.factor, as.character) %>%
       mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
       group_by(rsid) %>%
-      slice_min(p_value) %>%
+      slice_max(log10_pval) %>%
       ungroup() %>%
       tidyr::drop_na()
   } else {
     df <- df %>%
-      select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, p_value = {{ p_value }}, trait = {{ trait }}) %>%
+      select(rsid = {{ rsid }}, chromosome = {{ chrom }}, position = {{ pos }}, ref = {{ ref }}, alt = {{ alt }}, log10_pval, trait = {{ trait }}) %>%
       mutate_if(is.factor, as.character) %>%
       mutate(ref = stringr::str_to_upper(ref), alt = stringr::str_to_upper(alt)) %>%
-      arrange(p_value) %>%
       group_by(trait, rsid) %>%
-      slice_min(p_value) %>%
+      slice_max(log10_pval) %>%
       ungroup() %>%
       tidyr::drop_na()
   }
@@ -72,14 +86,14 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
   # Create df containing information about lead SNP (by default, select SNP with lowest p-value, otherwise take user-supplied value)
   if (is.null(lead_snp)) {
     indep_snps <- df %>%
-      slice_min(p_value, with_ties = FALSE, n = 1) %>%
+      slice_max(log10_pval, with_ties = FALSE, n = 1) %>%
       select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt)
 
     cli::cli_alert_info("No lead_snp supplied. Defaulting to {indep_snps$lead_rsid} - {indep_snps$lead_chromosome}:{indep_snps$lead_position}, which has the lowest p-value in the region")
   } else if (!(lead_snp %in% df$rsid)) {
     # ensure lead_snp is in the supplied data; if not, use minimum p-value at locus
     indep_snps <- df %>%
-      slice_min(p_value, with_ties = FALSE, n = 1) %>%
+      slice_max(log10_pval, with_ties = FALSE, n = 1) %>%
       select(lead_rsid = rsid, lead_chromosome = chromosome, lead_position = position, lead_ref = ref, lead_alt = alt)
 
     cli::cli_alert_info("Lead snp not present in supplied locus data. Defaulting to {indep_snps$lead_rsid} - {indep_snps$lead_chromosome}:{indep_snps$lead_position}, which has the lowest p-value in the region")
@@ -174,12 +188,12 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
   # Make plot (sample non-significant p-values to reduce overplotting)
   regional_assoc_plot <- locus_snps_ld %>%
                      distinct(rsid, .keep_all = TRUE) %>%
-                     filter(p_value < plot_pvalue_threshold | correlation > 0.2 | legend_label == "Ref") %>% # improve overplotting
+                     filter(log10_pval > -log10(plot_pvalue_threshold) | correlation > 0.2 | legend_label == "Ref") %>% # improve overplotting
                      bind_rows(locus_snps_ld %>%
-                                 filter(p_value >= plot_pvalue_threshold & correlation < 0.2 & legend_label != "Ref") %>%
+                                 filter(log10_pval <= -log10(plot_pvalue_threshold) & correlation < 0.2 & legend_label != "Ref") %>%
                                  slice_sample(prop = plot_subsample_prop)) %>%
-                     arrange(desc(color_code), desc(p_value)) %>%
-                     ggplot(aes(position, -log10(p_value))) +
+                     arrange(color_code, log10_pval) %>%
+                     ggplot(aes(position, log10_pval)) +
                      geom_point(aes(fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
                      ggrepel::geom_label_repel(data = locus_snps_ld_label, aes(label = label),
                                                size = 4,
@@ -226,8 +240,8 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
   if (plot_recombination) {
     cli::cli_alert_info("Extracting recombination rates for the region {indep_snps$lead_chromosome}:{indep_snps$lead_position - plot_distance/2}-{indep_snps$lead_position + plot_distance/2}")
-    ylim <- max(-log10(pull(locus_snps_ld, p_value)), na.rm = TRUE) +
-      0.3 * max(-log10(pull(locus_snps_ld, p_value)), na.rm = TRUE)
+    ylim <- max(pull(locus_snps_ld, log10_pval), na.rm = TRUE) +
+      0.3 * max(pull(locus_snps_ld, log10_pval), na.rm = TRUE)
 
     recomb_df <- recomb_extract_locuszoom(chrom = indep_snps$lead_chromosome, start = indep_snps$lead_position - plot_distance / 2, end = indep_snps$lead_position + plot_distance / 2, genome_build = genome_build) %>%
       select(position, recomb_rate)
@@ -282,3 +296,4 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
 
   return(regional_assoc_plot)
 }
+
