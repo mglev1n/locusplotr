@@ -183,7 +183,10 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       group_by(.data = ., trait)
     }
 
-  locus_snps_ld_label <- locus_snps_ld %>% ungroup %>% filter(!is.na(label)) %>% unique()
+  locus_snps_ld_label <- locus_snps_ld %>%
+    ungroup() %>%
+    filter(!is.na(label)) %>%
+    distinct(rsid, trait, .keep_all = TRUE)
 
   # Make plot (sample non-significant p-values to reduce overplotting)
   regional_assoc_plot <- locus_snps_ld %>%
@@ -192,7 +195,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
                      bind_rows(locus_snps_ld %>%
                                  filter(log10_pval <= -log10(plot_pvalue_threshold) & correlation < 0.2 & legend_label != "Ref") %>%
                                  slice_sample(prop = plot_subsample_prop)) %>%
-                     arrange(color_code, log10_pval) %>%
+                     arrange(desc(color_code), log10_pval) %>%
                      ggplot(aes(position, log10_pval)) +
                      geom_point(aes(fill = factor(color_code), size = lead, alpha = lead, shape = lead)) +
                      ggrepel::geom_label_repel(data = locus_snps_ld_label, aes(label = label),
