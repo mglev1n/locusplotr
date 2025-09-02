@@ -183,7 +183,7 @@ gg_locusplot <- function(df, lead_snp = NULL, rsid = rsid, chrom = chrom, pos = 
       group_by(.data = ., trait)
     }
 
-  locus_snps_ld_label <- locus_snps_ld %>% filter(!is.na(label))
+  locus_snps_ld_label <- locus_snps_ld %>% ungroup %>% filter(!is.na(label)) %>% unique()
 
   # Make plot (sample non-significant p-values to reduce overplotting)
   regional_assoc_plot <- locus_snps_ld %>%
