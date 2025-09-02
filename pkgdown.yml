@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles: {}
-last_built: 2025-09-02T20:37Z
+last_built: 2025-09-02T21:23Z
 urls:
   reference: https://mglev1n.github.io/locusplotr/reference
   article: https://mglev1n.github.io/locusplotr/articles
