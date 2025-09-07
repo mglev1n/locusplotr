@@ -1,6 +1,6 @@
 Package: locusplotr
 Title: Create Regional Association Plots
-Version: 0.5.1
+Version: 0.5.2
 Authors@R: 
     person(given = "Michael",
            family = "Levin",
