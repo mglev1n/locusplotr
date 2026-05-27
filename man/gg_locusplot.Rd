@@ -7,6 +7,7 @@
 gg_locusplot(
   df,
   lead_snp = NULL,
+  ld_df = NULL,
   rsid = rsid,
   chrom = chrom,
   pos = pos,
@@ -32,6 +33,8 @@ gg_locusplot(
 \item{df}{Dataframe containing columns with rsid, chromosome, position, reference/effect allele, alternate/non-effect allele, and p-value for all variants within the range of interest}
 
 \item{lead_snp}{A character vector containing a lead variant of interest. When NULL (default), the variant with the lowest p-value will be selected as the lead variant.}
+
+\item{ld_df}{(optional) Dataframe containing custom linkage disequilibrium data. Must contain columns RSID1, RSID2, and r (case-insensitive). If NULL, data will be fetched from LocusZoom API.}
 
 \item{rsid}{Rsid column}
 
@@ -76,7 +79,7 @@ A ggplot object containing a regional association plot for the locus of interest
 }
 \description{
 Returns a ggplot object containing a regional association plot (-log10(p-value) as a function of chromosomal position, with variants colored by linkage disequilibrium to reference variant).
-This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API \url{https://portaldev.sph.umich.edu/}) for that locus to create a regional association plot.
+This function allows the user to integrate genome wide association study (GWAS) summary statistics for a locus of interest with linkage disequilibrium information (obtained using the University of Michigan LocusZoom API \url{https://portaldev.sph.umich.edu/} or a custom dataframe) for that locus to create a regional association plot.
 }
 \examples{
 \dontrun{
