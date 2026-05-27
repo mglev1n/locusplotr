@@ -1,0 +1,161 @@
+# Create a regional association plot
+
+Returns a ggplot object containing a regional association plot
+(-log10(p-value) as a function of chromosomal position, with variants
+colored by linkage disequilibrium to reference variant). This function
+allows the user to integrate genome wide association study (GWAS)
+summary statistics for a locus of interest with linkage disequilibrium
+information (obtained using the University of Michigan LocusZoom API
+<https://portaldev.sph.umich.edu/> or a custom dataframe) for that locus
+to create a regional association plot.
+
+## Usage
+
+``` r
+gg_locusplot(
+  df,
+  lead_snp = NULL,
+  ld_df = NULL,
+  rsid = rsid,
+  chrom = chrom,
+  pos = pos,
+  ref = ref,
+  alt = alt,
+  effect = NULL,
+  std_err = NULL,
+  p_value = p_value,
+  trait = NULL,
+  plot_pvalue_threshold = 0.1,
+  plot_subsample_prop = 0.25,
+  plot_distance = 5e+05,
+  genome_build = "GRCh37",
+  population = "ALL",
+  plot_genes = FALSE,
+  plot_recombination = FALSE,
+  plot_title = NULL,
+  plot_subtitle = NULL,
+  path = NULL
+)
+```
+
+## Arguments
+
+- df:
+
+  Dataframe containing columns with rsid, chromosome, position,
+  reference/effect allele, alternate/non-effect allele, and p-value for
+  all variants within the range of interest
+
+- lead_snp:
+
+  A character vector containing a lead variant of interest. When NULL
+  (default), the variant with the lowest p-value will be selected as the
+  lead variant.
+
+- ld_df:
+
+  (optional) Dataframe containing custom linkage disequilibrium data.
+  Must contain columns RSID1, RSID2, and r (case-insensitive). If NULL,
+  data will be fetched from LocusZoom API.
+
+- rsid:
+
+  Rsid column
+
+- chrom:
+
+  Chromosome column
+
+- pos:
+
+  Position column
+
+- ref:
+
+  Reference/effect allele column
+
+- alt:
+
+  Alternate/non-effect allele column
+
+- effect:
+
+  Effect size column (on beta or log-odds scale)
+
+- std_err:
+
+  Standard error column
+
+- p_value:
+
+  P-value column
+
+- trait:
+
+  (optional) Column containing the name of the trait
+
+- plot_pvalue_threshold:
+
+  Threshold for plotting p-value on regional association plot (default =
+  0.1) - reducing the number of points decreases file size and improves
+  performance
+
+- plot_subsample_prop:
+
+  Proportion of points above p-value threshold to plot (default = 0.25;
+  range = 0-1) - reducing the number of points decreases file size and
+  improves performance
+
+- plot_distance:
+
+  Integer corresponding to the size of the locus that should be plotted
+
+- genome_build:
+
+  Character - one of "GRCh37" or "GRCh38"
+
+- population:
+
+  Character - one of "ALL", "AFR", "AMR", "EAS", "EUR", "SAS" referring
+  to the reference population of interest for obtaining linkage
+  disequilibrium information (default = "ALL")
+
+- plot_genes:
+
+  Logical - Include a plot of genes/transcripts within the region of
+  interest beneath the regional association plot (default = FALSE)
+
+- plot_recombination:
+
+  Logical - Include a secondary y-axis of recombination rate within the
+  region of interest
+
+- plot_title:
+
+  A character string corresponding to plot title (default = NULL)
+
+- plot_subtitle:
+
+  A character string corresponding to plot subtitle (default = NULL)
+
+- path:
+
+  Character string (default = NULL) - if a path is supplied a .pdf of
+  the plot will be saved
+
+## Value
+
+A ggplot object containing a regional association plot for the locus of
+interest
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Basic regional association plot
+gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value)
+
+# Use "plot_genes = TRUE" to add a plot of genes within the region beneath the regional association plot
+gg_locusplot(df = fto_locus_df, lead_snp = "rs62033413", rsid = rsid, chrom = chromosome, pos = position, ref = effect_allele, alt = other_allele, p_value = p_value, plot_genes = TRUE)
+} # }
+```
